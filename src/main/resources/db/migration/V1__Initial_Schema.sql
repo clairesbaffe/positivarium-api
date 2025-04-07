@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+INSERT INTO roles (name) VALUES
+('ROLE_ADMIN'),
+('ROLE_PUBLISHER'),
+('ROLE_USER'),
+('ROLE_BAN');
