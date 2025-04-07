@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255),
+    password VARCHAR(255),
+    name VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS users_roles (
+    user_id INT,
+    role_id INT,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+)
+
+INSERT INTO roles (name) VALUES
+('ROLE_ADMIN'),
+('ROLE_PUBLISHER'),
+('ROLE_USER'),
+('ROLE_BAN');
