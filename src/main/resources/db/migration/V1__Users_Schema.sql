@@ -5,16 +5,18 @@ CREATE TABLE IF NOT EXISTS roles (
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    enabled BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS users_roles (
-    user_id INT NOT NULL,
-    role_id INT NOT NULL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+    id SERIAL PRIMARY KEY,
+    users_id INT NOT NULL,
+    roles_id INT NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY (users_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_role FOREIGN KEY (roles_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 INSERT INTO roles (name) VALUES
@@ -22,3 +24,8 @@ INSERT INTO roles (name) VALUES
 ('ROLE_PUBLISHER'),
 ('ROLE_USER'),
 ('ROLE_BAN');
+
+ALTER TABLE users
+ADD COLUMN claim_token VARCHAR(255) UNIQUE,
+ADD COLUMN user_creator INT,
+ADD COLUMN token_expiration TIMESTAMP;
