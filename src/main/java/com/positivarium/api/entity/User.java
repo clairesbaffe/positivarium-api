@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,5 +33,11 @@ public class User {
     private LocalDateTime tokenExpiration;
 
     private String claimToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Article> articles = new ArrayList<>();
+
+    @ManyToMany
+    private Set<Article> likedArticles = new HashSet<>();
 
 }
