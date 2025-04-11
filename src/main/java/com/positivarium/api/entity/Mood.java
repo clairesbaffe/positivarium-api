@@ -2,6 +2,7 @@ package com.positivarium.api.entity;
 
 import com.positivarium.api.enums.MoodType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
 @Table(name = "moods")
 public class Mood {
 

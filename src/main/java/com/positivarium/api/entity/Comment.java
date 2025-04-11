@@ -1,6 +1,7 @@
 package com.positivarium.api.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
 @Table(name = "comments")
 public class Comment {
 

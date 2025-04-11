@@ -1,10 +1,12 @@
 package com.positivarium.api.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
+@Builder
 @Table(name = "comment_reports")
 public class CommentReport {
 

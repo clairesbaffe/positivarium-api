@@ -1,6 +1,7 @@
 package com.positivarium.api.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
 @Table(name = "journal_entries")
 public class JournalEntry {
 
