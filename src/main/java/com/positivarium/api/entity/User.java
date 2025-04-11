@@ -40,4 +40,7 @@ public class User {
     @ManyToMany
     private Set<Article> likedArticles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
 }
