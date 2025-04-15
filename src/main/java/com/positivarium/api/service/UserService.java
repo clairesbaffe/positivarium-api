@@ -79,6 +79,22 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public User updateUserRoles(String username, List<String> roleNames) throws Exception {
+        User user = userRepository.findByUsername(username);
+        if(user == null){
+            throw new Exception("User not found with username : " + username);
+        }
+
+        List<Role> roles = roleNames.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                .toList();
+
+        user.setRoles(roles);
+
+        return userRepository.save(user);
+    }
+
 
 }
 
