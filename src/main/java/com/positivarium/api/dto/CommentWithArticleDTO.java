@@ -3,9 +3,10 @@ package com.positivarium.api.dto;
 import lombok.Builder;
 
 @Builder
-public record CommentDTO(
+public record CommentWithArticleDTO(
         Long id,
         String content,
-        String username
+        String username,
+        SimpleArticleDTO article
 ) {
 }

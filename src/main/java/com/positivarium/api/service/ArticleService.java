@@ -66,6 +66,12 @@ public class ArticleService {
         return articleMapping.entityToDto(article);
     }
 
+    public Article findArticleById(Long id) throws Exception {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new Exception("Article not found"));
+    }
+
+
     public ArticleDTO createArticle(ArticleDTO articleDTO, Authentication authentication) {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
         if (username == null) return null;
