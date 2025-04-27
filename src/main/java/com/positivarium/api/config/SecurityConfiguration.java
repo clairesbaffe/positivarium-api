@@ -80,9 +80,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE,"/articles/").hasAnyRole("ADMIN", "PUBLISHER")
                         .requestMatchers("/user/**").hasRole("USER")
                         // Banned users cannot participate in community
-                        .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
                         // Public access to certain routes, such as homepage, registration and login
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
                         .requestMatchers("/api/articles/published/*").permitAll()

@@ -38,6 +38,11 @@ public class User {
     private List<Article> articles = new ArrayList<>();
 
     @ManyToMany
+    @JoinTable(
+            name = "likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
     private Set<Article> likedArticles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
