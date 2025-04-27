@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS daily_news_preferences (
 
 CREATE TABLE IF NOT EXISTS daily_news_preferences_categories (
     id SERIAL PRIMARY KEY,
+    date TIMESTAMP NOT NULL,
     category_id INT NOT NULL,
     daily_news_preference_id INT NOT NULL,
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE CASCADE,

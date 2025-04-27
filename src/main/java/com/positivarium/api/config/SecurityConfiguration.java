@@ -3,6 +3,7 @@ package com.positivarium.api.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -73,9 +74,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/publisher/**").hasRole("PUBLISHER")
+                        .requestMatchers(HttpMethod.GET, "/api/articles/drafts").hasRole("PUBLISHER")
+                        .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
+                        .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
+                        .requestMatchers(HttpMethod.DELETE,"/articles/").hasAnyRole("ADMIN", "PUBLISHER")
                         .requestMatchers("/user/**").hasRole("USER")
                         // Public access to certain routes, such as homepage, registration and login
-                        .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
+                        .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login", "/api/articles/published/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/articles/").permitAll()
                         .anyRequest().authenticated() // All other requests need authentication
                 )
                 // Adding JWT filter, verifying user token and role

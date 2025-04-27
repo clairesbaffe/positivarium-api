@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS articles (
     is_published BOOLEAN NOT NULL,
     published_at TIMESTAMP,
     user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -22,6 +24,7 @@ CREATE TABLE IF NOT EXISTS comments (
     content TEXT NOT NULL,
     user_id INT,
     article_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     CONSTRAINT fk_article FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
 );
