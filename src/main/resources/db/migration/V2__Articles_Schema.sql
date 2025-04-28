@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS article_reports (
     reason TEXT NOT NULL,
     is_reviewed BOOLEAN NOT NULL,
     article_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_article FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
 );
 
@@ -42,6 +44,8 @@ CREATE TABLE IF NOT EXISTS comment_reports (
     reason TEXT NOT NULL,
     is_reviewed BOOLEAN NOT NULL,
     comment_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_comment FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
 );
 

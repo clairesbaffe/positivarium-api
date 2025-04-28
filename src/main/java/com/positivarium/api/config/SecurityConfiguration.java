@@ -72,14 +72,14 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // CSRF deactivation, required for JWT
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS config application
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/publisher/**").hasRole("PUBLISHER")
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/publisher/**", "/api/publisher/**").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.DELETE,"/articles/").hasAnyRole("ADMIN", "PUBLISHER")
                         .requestMatchers("/user/**").hasRole("USER")
                         // Banned users cannot participate in community
-                        .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "/api/likes/article/*", "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*").not().hasRole("BAN")
                         .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
                         // Public access to certain routes, such as homepage, registration and login

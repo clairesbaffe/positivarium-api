@@ -1,11 +1,17 @@
 package com.positivarium.api.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Table(name = "article_reports")
 public class ArticleReport {
@@ -19,6 +25,12 @@ public class ArticleReport {
 
     @Column(name = "is_reviewed", nullable = false)
     private boolean isReviewed;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = false)

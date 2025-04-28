@@ -38,6 +38,11 @@ public class CommentService {
         return commentWithArticleMapping.entityToDto(comment);
     }
 
+    public Comment findCommentById(Long id) throws Exception {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new Exception("Comment not found"));
+    }
+
     public void createComment(CommentDTO commentDTO, Long articleId, Authentication authentication) throws Exception{
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
         if (username == null) return;
