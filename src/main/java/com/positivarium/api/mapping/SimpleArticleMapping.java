@@ -14,4 +14,13 @@ public class SimpleArticleMapping {
                 .main_image(article.getMainImage())
                 .build();
     }
+
+    public SimpleArticleDTO entityToDtoWithLikesCount(Article article, Long likesCount){
+        return SimpleArticleDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .main_image(article.getMainImage())
+                .likesCount(likesCount)
+                .build();
+    }
 }

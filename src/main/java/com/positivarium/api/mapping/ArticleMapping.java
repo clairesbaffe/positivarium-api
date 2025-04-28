@@ -9,6 +9,7 @@ public class ArticleMapping {
 
     public ArticleDTO entityToDto(Article article){
         return ArticleDTO.builder()
+                .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
                 .main_image(article.getMainImage())
@@ -32,5 +33,17 @@ public class ArticleMapping {
         article.setTitle(articleDTO.title());
         article.setContent(articleDTO.content());
         article.setMainImage(articleDTO.main_image());
+    }
+
+    public ArticleDTO entityToDtoWithLikes(Article article, Long likesCount){
+        return ArticleDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .main_image(article.getMainImage())
+                .isPublished(article.isPublished())
+                .publishedAt(article.getPublishedAt())
+                .likesCount(likesCount)
+                .build();
     }
 }

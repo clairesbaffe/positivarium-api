@@ -60,18 +60,6 @@ public class ArticleController {
         return articleService.getPublishedArticlesByUser(page, size, username);
     }
 
-    @GetMapping("/drafts")
-    public Page<SimpleArticleDTO> getDraftsByUser(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Authentication authentication
-    ){
-
-        // manage depending on user role and journal status
-        // potentially use credentials to get user roles, but credentials must not be mandatory
-        return articleService.getDraftsByUser(page, size, authentication);
-    }
-
     @PutMapping("/publish/{id}")
     public void publishArticle(@PathVariable Long id, Authentication authentication){
         try{

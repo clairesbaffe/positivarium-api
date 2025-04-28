@@ -74,7 +74,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/publisher/**").hasRole("PUBLISHER")
-                        .requestMatchers(HttpMethod.GET, "/api/articles/drafts").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.DELETE,"/articles/").hasAnyRole("ADMIN", "PUBLISHER")
@@ -85,9 +84,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
                         // Public access to certain routes, such as homepage, registration and login
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
-                        .requestMatchers("/api/articles/published/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/articles/", "/api/articles/*", "/api/articles/published/*").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/", "api/comments/article/*", "api/comments/user/*", "api/comments/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/articles/").permitAll()
+
                         .anyRequest().authenticated() // All other requests need authentication
                 )
                 // Adding JWT filter, verifying user token and role

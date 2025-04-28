@@ -29,7 +29,11 @@ public class ArticleService {
     public Page<SimpleArticleDTO> getArticles(int pageNumber, int pageSize){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Article> articles = articleRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return articles.map(simpleArticleMapping::entityToDto);
+
+        return articles.map(article -> {
+            Long likesCount = articleRepository.countLikesByArticleId(article.getId());
+            return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
+        });
     }
 
     public Page<SimpleArticleDTO> getPublishedArticlesByUser(int pageNumber, int pageSize, String username){
@@ -42,7 +46,11 @@ public class ArticleService {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Article> articles = articleRepository.findByUserIdAndIsPublishedTrueOrderByPublishedAtDesc(userId, pageable);
-        return articles.map(simpleArticleMapping::entityToDto);
+
+        return articles.map(article -> {
+            Long likesCount = articleRepository.countLikesByArticleId(article.getId());
+            return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
+        });
     }
 
     public Page<SimpleArticleDTO> getDraftsByUser(int pageNumber, int pageSize, Authentication authentication){
@@ -62,15 +70,17 @@ public class ArticleService {
     public ArticleDTO getArticleById(Long id) throws Exception {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new Exception("Article not found"));
+        System.out.println(article.getId());
 
-        return articleMapping.entityToDto(article);
+        Long likesCount = articleRepository.countLikesByArticleId(id);
+
+        return articleMapping.entityToDtoWithLikes(article, likesCount);
     }
 
     public Article findArticleById(Long id) throws Exception {
         return articleRepository.findById(id)
                 .orElseThrow(() -> new Exception("Article not found"));
     }
-
 
     public ArticleDTO createArticle(ArticleDTO articleDTO, Authentication authentication) {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;

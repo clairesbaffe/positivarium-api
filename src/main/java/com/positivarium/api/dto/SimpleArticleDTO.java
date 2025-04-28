@@ -6,6 +6,7 @@ import lombok.Builder;
 public record SimpleArticleDTO(
         Long id,
         String title,
-        String main_image
+        String main_image,
+        Long likesCount
 ) {
 }
