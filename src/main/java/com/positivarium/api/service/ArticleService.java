@@ -67,14 +67,19 @@ public class ArticleService {
         return articles.map(simpleArticleMapping::entityToDto);
     }
 
-    public ArticleDTO getArticleById(Long id) throws Exception {
+    public ArticleDTO getArticleById(Long id, Authentication authentication) throws Exception {
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+
+        Boolean liked = (username != null && userService.getUser(username) != null)
+                ? articleRepository.userLikedArticle(userService.getUser(username).getId(), id)
+                : false;
+
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new Exception("Article not found"));
-        System.out.println(article.getId());
 
         Long likesCount = articleRepository.countLikesByArticleId(id);
 
-        return articleMapping.entityToDtoWithLikes(article, likesCount);
+        return articleMapping.entityToDtoWithLikes(article, likesCount, liked);
     }
 
     public Article findArticleById(Long id) throws Exception {

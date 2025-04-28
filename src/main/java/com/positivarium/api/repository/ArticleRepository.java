@@ -43,4 +43,13 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
     )
     public Long countLikesByArticleId(Long articleId);
 
+    @Query(
+            value = "SELECT EXISTS(" +
+                    "SELECT 1 FROM likes " +
+                    "WHERE user_id = ?1 AND article_id = ?2" +
+                    ") AS liked",
+            nativeQuery = true
+    )
+    public Boolean userLikedArticle(Long userId, Long articleId);
+
 }

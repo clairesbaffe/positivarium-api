@@ -16,6 +16,7 @@ public record ArticleDTO(
         String main_image,
         boolean isPublished,
         LocalDateTime publishedAt,
-        Long likesCount
+        Long likesCount,
+        Boolean userLiked
 ) {
 }

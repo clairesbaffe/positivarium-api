@@ -35,7 +35,7 @@ public class ArticleMapping {
         article.setMainImage(articleDTO.main_image());
     }
 
-    public ArticleDTO entityToDtoWithLikes(Article article, Long likesCount){
+    public ArticleDTO entityToDtoWithLikes(Article article, Long likesCount, Boolean userLiked){
         return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
@@ -44,6 +44,7 @@ public class ArticleMapping {
                 .isPublished(article.isPublished())
                 .publishedAt(article.getPublishedAt())
                 .likesCount(likesCount)
+                .userLiked(userLiked)
                 .build();
     }
 }

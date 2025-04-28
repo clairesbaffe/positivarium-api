@@ -27,11 +27,12 @@ public class ArticleController {
 
     @GetMapping("/{id}")
     public ArticleDTO getArticleById(
-        @PathVariable Long id
+        @PathVariable Long id,
+        Authentication authentication
     ){
         // only returns article, for comments use getCommentsByArticleId
         try{
-            return articleService.getArticleById(id);
+            return articleService.getArticleById(id, authentication);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
