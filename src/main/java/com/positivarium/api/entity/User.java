@@ -52,7 +52,7 @@ public class User {
     private List<JournalEntry> journalEntries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Article> publisherRequests = new ArrayList<>();
+    private List<PublisherRequest> publisherRequests = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -64,4 +64,10 @@ public class User {
 
     @ManyToMany(mappedBy = "following")
     private Set<User> followers = new HashSet<>();
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<Notification> sentNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<Notification> receivedNotifications = new ArrayList<>();
 }

@@ -92,3 +92,9 @@ CREATE TRIGGER set_updated_at_publisher_requests
 BEFORE UPDATE ON publisher_requests
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+
+CREATE TRIGGER set_created_at_notifications
+BEFORE INSERT ON notifications
+FOR EACH ROW
+EXECUTE FUNCTION set_created_at_column();
