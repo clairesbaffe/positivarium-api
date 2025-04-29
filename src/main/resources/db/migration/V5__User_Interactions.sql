@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE TABLE IF NOT EXISTS follows (
     id SERIAL PRIMARY KEY,
-    follower_id INT NOT NULL,
     user_id INT NOT NULL,
-    CONSTRAINT fk_sender FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    publisher_id INT NOT NULL,
+    CONSTRAINT fk_sender FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (publisher_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS publisher_requests (

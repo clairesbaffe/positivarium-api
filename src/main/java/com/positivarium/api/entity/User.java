@@ -53,4 +53,15 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Article> publisherRequests = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "follows",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "publisher_id")
+    )
+    private Set<User> following = new HashSet<>();
+
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
 }

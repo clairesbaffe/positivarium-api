@@ -1,6 +1,8 @@
 package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.PublisherRequestDTO;
+import com.positivarium.api.dto.UserDTO;
+import com.positivarium.api.service.FollowService;
 import com.positivarium.api.service.PublisherRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final PublisherRequestService publisherRequestService;
+    private final FollowService followService;
 
     @PostMapping("/publisher_request")
     public void createPublisherRequest(
@@ -41,5 +44,39 @@ public class UserController {
             Authentication authentication
     ){
         return publisherRequestService.getPublisherRequestsByUser(page, size, authentication);
+    }
+
+
+    @PostMapping("/follow/{publisherId}")
+    public void followPublisher(
+            @PathVariable Long publisherId,
+            Authentication authentication
+    ){
+        try{
+            followService.followPublisher(publisherId, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/follow/{publisherId}")
+    public void unfollowPublisher(
+            @PathVariable Long publisherId,
+            Authentication authentication
+    ){
+        try{
+            followService.unfollowPublisher(publisherId, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/follow")
+    public Page<UserDTO> getFollowing(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
+    ){
+        return followService.getFollowing(page, size, authentication);
     }
 }

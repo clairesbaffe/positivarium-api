@@ -5,6 +5,8 @@ import com.positivarium.api.entity.User;
 import com.positivarium.api.repository.RoleRepository;
 import com.positivarium.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,18 @@ public class UserService {
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public void updateUser(User user){
+        userRepository.save(user);
+    }
+
+    public Boolean following(Long userId, Long publisherId){
+        return userRepository.userFollowsPublisher(userId, publisherId);
+    }
+
+    public Page<User> findFollowing(Long userId, Pageable pageable){
+        return userRepository.findUsersFollowedBy(userId, pageable);
     }
 
     public User getUserByToken(String token) {
