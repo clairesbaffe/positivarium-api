@@ -51,4 +51,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<JournalEntry> journalEntries = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Article> publisherRequests = new ArrayList<>();
 }

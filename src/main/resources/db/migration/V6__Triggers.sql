@@ -81,3 +81,14 @@ CREATE TRIGGER set_updated_at_comment_reports
 BEFORE UPDATE ON comment_reports
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+
+CREATE TRIGGER set_created_at_and_published_at_publisher_requests
+BEFORE INSERT ON publisher_requests
+FOR EACH ROW
+EXECUTE FUNCTION set_created_at_and_published_at_column();
+
+CREATE TRIGGER set_updated_at_publisher_requests
+BEFORE UPDATE ON publisher_requests
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

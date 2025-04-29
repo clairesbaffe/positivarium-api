@@ -22,5 +22,7 @@ CREATE TABLE IF NOT EXISTS publisher_requests (
     status VARCHAR(50) NOT NULL,
     motivation TEXT NOT NULL,
     user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -76,11 +76,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/publisher/**", "/api/publisher/**").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
-                        .requestMatchers(HttpMethod.DELETE,"/articles/").hasAnyRole("ADMIN", "PUBLISHER")
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
+                        .requestMatchers("/api/user/**").hasRole("USER")
                         // Banned users cannot participate in community
                         .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "/api/likes/article/*", "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*", "/api/user/publisher_request").not().hasRole("BAN")
                         .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
                         // Public access to certain routes, such as homepage, registration and login
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
