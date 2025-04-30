@@ -16,7 +16,7 @@ public class AdminController {
     private final ReportService reportService;
     private final PublisherRequestService publisherRequestService;
 
-    @PutMapping("/reports/articles/{id}")
+    @PostMapping("/reports/articles/{id}")
     public void markArticleReportAsRead(
             @PathVariable Long id
     ){
@@ -47,7 +47,7 @@ public class AdminController {
     }
 
 
-    @PutMapping("/reports/comments/{id}")
+    @PostMapping("/reports/comments/{id}")
     public void markCommentReportAsRead(
             @PathVariable Long id
     ){
@@ -105,7 +105,7 @@ public class AdminController {
         }
     }
 
-    @PutMapping("publisher_requests/{id}")
+    @PostMapping("publisher_requests/{id}")
     public void updatePublisherRequestStatus(
             @PathVariable Long id,
             @RequestParam PublisherRequestStatusEnum status

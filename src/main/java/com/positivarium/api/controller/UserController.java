@@ -25,7 +25,7 @@ public class UserController {
         publisherRequestService.createPublisherRequest(publisherRequestDTO, authentication);
     }
 
-    @PutMapping("/publisher_request/cancel/{id}")
+    @PostMapping("/publisher_request/cancel/{id}")
     public void cancelPublisherRequest(
             @PathVariable Long id,
             Authentication authentication

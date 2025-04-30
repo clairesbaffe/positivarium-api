@@ -50,7 +50,7 @@ public class NotificationController {
         return notificationService.getUnreadReceivedNotifications(page, size, authentication);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/read/{id}")
     public void markNotificationAsRead(
             @PathVariable Long id,
             Authentication authentication

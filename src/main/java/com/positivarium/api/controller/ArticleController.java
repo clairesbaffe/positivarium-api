@@ -81,7 +81,7 @@ public class ArticleController {
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
     }
 
-    @PutMapping("/publish/{id}")
+    @PostMapping("/publish/{id}")
     public void publishArticle(@PathVariable Long id, Authentication authentication){
         try{
             articleService.publishArticle(id, authentication);
