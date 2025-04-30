@@ -100,7 +100,8 @@ public class PublisherRequestService {
 
         if(status == PublisherRequestStatusEnum.APPROVED){
             User user = publisherRequest.getUser();
-            // change user role to publisher
+
+            userService.grantPublisher(user.getUsername());
         }
     }
 }
