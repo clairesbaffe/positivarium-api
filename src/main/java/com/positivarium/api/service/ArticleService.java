@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -64,6 +63,12 @@ public class ArticleService {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Article> articles = articleRepository.findByUserIdAndIsPublishedFalseOrderByCreatedAtDesc(userId, pageable);
+        return articles.map(simpleArticleMapping::entityToDto);
+    }
+
+    public Page<SimpleArticleDTO> getByCategoryIds(int pageNumber, int pageSize, List<Long> categoryIds){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Article> articles = articleRepository.findAllByCategoryIdInAndIsPublishedTrueOrderByPublishedAtDesc(categoryIds, pageable);
         return articles.map(simpleArticleMapping::entityToDto);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ArticleRepository extends CrudRepository<Article, Long>{
@@ -16,6 +17,8 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
     Page<Article> findByUserIdAndIsPublishedTrueOrderByPublishedAtDesc(Long userId, Pageable pageable);
 
     Page<Article> findByUserIdAndIsPublishedFalseOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    Page<Article> findAllByCategoryIdInAndIsPublishedTrueOrderByPublishedAtDesc(List<Long> categoryIds, Pageable pageable);
 
     Optional<Article> findByUserIdAndId(Long userId, Long articleId);
     @Transactional

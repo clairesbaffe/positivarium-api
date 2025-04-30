@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
@@ -59,6 +61,15 @@ public class ArticleController {
         // manage depending on user role and journal status
         // potentially use credentials to get user roles, but credentials must not be mandatory
         return articleService.getPublishedArticlesByUser(page, size, username);
+    }
+
+    @GetMapping("/categories")
+    public Page<SimpleArticleDTO> getByCategoryIds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam List<Long> categoryIds
+    ){
+        return articleService.getByCategoryIds(page, size, categoryIds);
     }
 
     @PutMapping("/publish/{id}")
