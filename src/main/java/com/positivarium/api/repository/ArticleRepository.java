@@ -20,6 +20,16 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
 
     Page<Article> findAllByCategoryIdInAndIsPublishedTrueOrderByPublishedAtDesc(List<Long> categoryIds, Pageable pageable);
 
+    @Query(
+            value = "SELECT a.* FROM articles a " +
+                    "JOIN users u ON a.user_id = u.id " +
+                    "JOIN follows f ON f.publisher_id = u.id " +
+                    "WHERE f.user_id = ?1 " +
+                    "AND a.is_published = true",
+            nativeQuery = true
+    )
+    public Page<Article> findAllPublishedByFollowedPublishers(Long userId, Pageable pageable);
+
     Optional<Article> findByUserIdAndId(Long userId, Long articleId);
     @Transactional
     void deleteByUserIdAndId(Long userId, Long articleId);

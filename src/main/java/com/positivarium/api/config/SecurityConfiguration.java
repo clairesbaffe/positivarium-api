@@ -77,7 +77,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
                         .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
-                        .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers("/api/user/**", "/api/articles/followed").hasRole("USER")
                         // Banned users cannot participate in community
                         .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "/api/likes/article/*", "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
                         .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*", "/api/user/publisher_request").not().hasRole("BAN")

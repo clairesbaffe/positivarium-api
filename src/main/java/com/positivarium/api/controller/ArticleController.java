@@ -72,6 +72,15 @@ public class ArticleController {
         return articleService.getByCategoryIds(page, size, categoryIds);
     }
 
+    @GetMapping("/followed")
+    public Page<SimpleArticleDTO> getPublishedFollowedPublishersArticles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
+    ){
+        return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
+    }
+
     @PutMapping("/publish/{id}")
     public void publishArticle(@PathVariable Long id, Authentication authentication){
         try{

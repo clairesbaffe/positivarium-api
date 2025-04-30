@@ -69,7 +69,27 @@ public class ArticleService {
     public Page<SimpleArticleDTO> getByCategoryIds(int pageNumber, int pageSize, List<Long> categoryIds){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Article> articles = articleRepository.findAllByCategoryIdInAndIsPublishedTrueOrderByPublishedAtDesc(categoryIds, pageable);
-        return articles.map(simpleArticleMapping::entityToDto);
+        return articles.map(article -> {
+            Long likesCount = articleRepository.countLikesByArticleId(article.getId());
+            return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
+        });
+    }
+
+    public Page<SimpleArticleDTO> getPublishedFollowedPublishersArticles(int pageNumber, int pageSize, Authentication authentication){
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+        if (username == null) return null;
+
+        User user = userService.getUser(username);
+        if (user == null) return null;
+
+        Long userId = user.getId();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Article> articles = articleRepository.findAllPublishedByFollowedPublishers(userId, pageable);
+        return articles.map(article -> {
+            Long likesCount = articleRepository.countLikesByArticleId(article.getId());
+            return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
+        });
     }
 
     public ArticleDTO getArticleById(Long id, Authentication authentication) throws Exception {

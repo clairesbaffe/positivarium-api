@@ -57,7 +57,7 @@ public class ArticleMapping {
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
                 .isPublished(article.isPublished())
                 .publishedAt(article.getPublishedAt())
-                .likesCount(likesCount)
+                .likesCount(likesCount != null ? likesCount : 0)
                 .userLiked(userLiked)
                 .build();
     }

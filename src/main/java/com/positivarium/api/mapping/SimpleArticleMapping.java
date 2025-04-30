@@ -26,7 +26,7 @@ public class SimpleArticleMapping {
                 .title(article.getTitle())
                 .main_image(article.getMainImage())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
-                .likesCount(likesCount)
+                .likesCount(likesCount != null ? likesCount : 0)
                 .build();
     }
 }
