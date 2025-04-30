@@ -77,8 +77,11 @@ public class UserService {
     }
 
     public List<String> getUserRoles(String username) {
-        User user = getUser(username);
-        return getUserRoles(user);
+        return userRepository.findByUsername(username)
+                .getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
     }
 
     public List<String> getUserRoles(User user) {
@@ -89,11 +92,12 @@ public class UserService {
         return user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
     }
 
+
     public User getUser(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User updateUserRoles(String username, List<String> roleNames) throws Exception {
+    public void updateUserRoles(String username, List<String> roleNames) throws Exception {
         User user = userRepository.findByUsername(username);
         if(user == null){
             throw new Exception("User not found with username : " + username);
@@ -102,13 +106,70 @@ public class UserService {
         List<Role> roles = roleNames.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
                         .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .toList();
+                .collect(Collectors.toList());
 
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
+    public void ban(String username) throws Exception {
+        List<String> roles = getUserRoles(username);
+        if(!roles.contains("ROLE_ADMIN")){
+            if(!roles.contains("ROLE_BAN")){
+                roles.add("ROLE_BAN");
+                try{
+                    updateUserRoles(username, roles);
+                } catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            } else throw new Exception("User is already banned");
+        } else throw new Exception("Admins cannot be banned");
+    }
+
+    public void unban(String username) throws Exception {
+        List<String> roles = getUserRoles(username);
+        if(roles.contains("ROLE_BAN")){
+            roles.remove("ROLE_BAN");
+            try{
+                updateUserRoles(username, roles);
+            } catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        } else throw new Exception("User is not banned");
+    }
+
+    public void grantPublisher(String username) throws Exception {
+        List<String> roles = getUserRoles(username);
+        if(!roles.contains("ROLE_BAN")){
+            if(roles.contains("ROLE_USER")){
+                if(!roles.contains("ROLE_PUBLISHER")){
+                    roles.clear();
+                    roles.add("ROLE_PUBLISHER");
+                    try{
+                        updateUserRoles(username, roles);
+                    } catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
+                } else throw new Exception("User is already publisher");
+            } else throw new Exception("Only users can become publisher");
+        } else throw new Exception("Banned users cannot be granted publisher");
+    }
+
+    public void grantAdmin(String username) throws Exception {
+        List<String> roles = getUserRoles(username);
+        if(!roles.contains("ROLE_BAN")){
+            if(!roles.contains("ROLE_ADMIN")){
+                roles.clear();
+                roles.add("ROLE_ADMIN");
+                try{
+                    updateUserRoles(username, roles);
+                } catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            } else throw new Exception("User is already admin");
+        } else throw new Exception("Banned users cannot be granted admin");
+    }
 
 }
 
