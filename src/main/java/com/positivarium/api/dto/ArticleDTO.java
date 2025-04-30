@@ -3,13 +3,15 @@ package com.positivarium.api.dto;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Builder
 public record ArticleDTO(
         Long id,
         String title,
         String content,
-        String main_image,
+        String mainImage,
+        CategoryDTO category,
         boolean isPublished,
         LocalDateTime publishedAt,
         Long likesCount,

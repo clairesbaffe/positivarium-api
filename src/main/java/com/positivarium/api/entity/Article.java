@@ -30,7 +30,7 @@ public class Article {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "main_image", nullable = false, length = 255)
+    @Column(name = "mainImage", nullable = false, length = 255)
     private String mainImage;
 
     @Column(name = "is_published", nullable = false)
@@ -57,5 +57,9 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<ArticleReport> reports = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }

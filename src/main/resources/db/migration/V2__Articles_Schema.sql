@@ -1,3 +1,15 @@
+CREATE TABLE IF NOT EXISTS general_categories(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS news_categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    category_id INT,
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES general_categories(id) ON DELETE SET NULL
+);
+
 CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
@@ -6,9 +18,11 @@ CREATE TABLE IF NOT EXISTS articles (
     is_published BOOLEAN NOT NULL,
     published_at TIMESTAMP,
     user_id INT,
+    category_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS likes (
@@ -47,31 +61,4 @@ CREATE TABLE IF NOT EXISTS comment_reports (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_comment FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS general_categories(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS news_categories (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    category_id INT,
-    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES general_categories(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS news_tags (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    category_id INT,
-    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS articles_news_tags (
-    id SERIAL PRIMARY KEY,
-    article_id INT NOT NULL,
-    news_tag_id INT NOT NULL,
-    CONSTRAINT fk_article FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
-    CONSTRAINT fk_news_tag FOREIGN KEY (news_tag_id) REFERENCES news_tags(id) ON DELETE CASCADE
 );

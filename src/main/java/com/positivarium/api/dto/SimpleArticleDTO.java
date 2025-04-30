@@ -7,6 +7,7 @@ public record SimpleArticleDTO(
         Long id,
         String title,
         String main_image,
+        CategoryDTO category,
         Long likesCount
 ) {
 }
