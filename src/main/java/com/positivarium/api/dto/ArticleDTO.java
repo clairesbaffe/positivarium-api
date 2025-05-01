@@ -11,6 +11,7 @@ public record ArticleDTO(
         String title,
         String content,
         String mainImage,
+        String username,
         CategoryDTO category,
         boolean isPublished,
         LocalDateTime publishedAt,

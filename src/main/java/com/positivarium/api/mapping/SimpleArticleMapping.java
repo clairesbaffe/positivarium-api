@@ -16,6 +16,7 @@ public class SimpleArticleMapping {
                 .id(article.getId())
                 .title(article.getTitle())
                 .main_image(article.getMainImage())
+                .username(article.getUser().getUsername())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
                 .build();
     }
@@ -25,6 +26,7 @@ public class SimpleArticleMapping {
                 .id(article.getId())
                 .title(article.getTitle())
                 .main_image(article.getMainImage())
+                .username(article.getUser().getUsername())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
                 .likesCount(likesCount != null ? likesCount : 0)
                 .build();
