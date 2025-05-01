@@ -26,5 +26,4 @@ public class Mood {
 
     @ManyToMany(mappedBy = "moods")
     private Set<JournalEntry> journalEntries = new HashSet<>();
-
 }

@@ -98,3 +98,9 @@ CREATE TRIGGER set_created_at_notifications
 BEFORE INSERT ON notifications
 FOR EACH ROW
 EXECUTE FUNCTION set_created_at_column();
+
+
+CREATE TRIGGER set_created_at_journal_entries
+BEFORE INSERT ON journal_entries
+FOR EACH ROW
+EXECUTE FUNCTION set_created_at_column();

@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 public record JournalEntryDTO(
         Long id,
         String description,
-        LocalDateTime date
+        LocalDateTime createdAt
 ) {
 }

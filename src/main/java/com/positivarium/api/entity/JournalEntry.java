@@ -1,8 +1,10 @@
 package com.positivarium.api.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -10,6 +12,8 @@ import java.util.Set;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Table(name = "journal_entries")
 public class JournalEntry {
@@ -21,14 +25,18 @@ public class JournalEntry {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "date", nullable = false)
-    private LocalDateTime date;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToMany
+    @JoinTable(
+            name = "journal_entries_moods",
+            joinColumns = @JoinColumn(name = "journal_entry_id"),
+            inverseJoinColumns = @JoinColumn(name = "mood_id")
+    )
     private Set<Mood> moods = new HashSet<>();
-
 }
