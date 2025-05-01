@@ -40,14 +40,6 @@ public class ArticleController {
         }
     }
 
-    @PostMapping("/")
-    public ArticleDTO createArticle(
-            @RequestBody ArticleDTO articleDTO,
-            Authentication authentication
-    ){
-        return articleService.createArticle(articleDTO, authentication);
-    }
-
     // this route works for everyone (even not connected),
     // publishers that want to get the list of their published articles
     // and users that want to get the list of published article from a publisher
@@ -79,15 +71,6 @@ public class ArticleController {
             Authentication authentication
     ){
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
-    }
-
-    @PostMapping("/publish/{id}")
-    public void publishArticle(@PathVariable Long id, Authentication authentication){
-        try{
-            articleService.publishArticle(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @DeleteMapping("/{id}")

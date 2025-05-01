@@ -42,10 +42,15 @@ public class ArticleMapping {
     }
 
     public void updateEntityFromDto(ArticleDTO articleDTO, Article article){
+        Category category = (articleDTO.category() != null && articleDTO.category().id() != null) ?
+                categoryRepository.findById(articleDTO.category().id())
+                        .orElseThrow(() -> new RuntimeException("Category not found")) : null;
+
         // nothing returned because article is a reference, not a copy of the object
         article.setTitle(articleDTO.title());
         article.setContent(articleDTO.content());
         article.setMainImage(articleDTO.mainImage());
+        article.setCategory(category);
     }
 
     public ArticleDTO entityToDtoWithLikes(Article article, Long likesCount, Boolean userLiked){

@@ -72,22 +72,43 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // CSRF deactivation, required for JWT
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS config application
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/publisher/**", "/api/publisher/**").hasRole("PUBLISHER")
-                        .requestMatchers(HttpMethod.POST, "/api/articles/").hasRole("PUBLISHER")
-                        .requestMatchers(HttpMethod.PUT, "/api/articles/publish/**").hasRole("PUBLISHER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
+                        // Banned users cannot perform sensitive actions (admin, publisher)
+                        .requestMatchers(HttpMethod.POST, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
+
+                        // Banned user can still unfollow and cancel publisher request
+                        .requestMatchers(HttpMethod.POST, "/api/user/follow/**", "/api/user/publisher_request/").not().hasRole("BAN")
+
+                        // Banned users cannot post or delete comments
+                        .requestMatchers(HttpMethod.POST, "/api/comments/**").not().hasRole("BAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").not().hasRole("BAN")
+
+                        // Banned users cannot like but they can unlike
+                        .requestMatchers(HttpMethod.POST, "/api/likes/article/*").not().hasRole("BAN")
+
+                        // Banned users cannot report articles or comments
+                        .requestMatchers(HttpMethod.POST, "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
+
+                        // Banned users cannot delete articles
+                        .requestMatchers(HttpMethod.DELETE, "/api/articles/*").not().hasRole("BAN")
+
+                        // Access control based on roles
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/publisher/**").hasRole("PUBLISHER")
                         .requestMatchers("/api/user/**", "/api/articles/followed").hasRole("USER")
-                        // Banned users cannot participate in community
-                        .requestMatchers(HttpMethod.POST, "/api/articles/", "/api/comments/*", "/api/likes/article/*", "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.PUT, "/api/articles/publish/*", "/api/user/publisher_request").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/articles/*", "/api/comments/*", "api/likes/article/*").not().hasRole("BAN")
-                        // Public access to certain routes, such as homepage, registration and login
+
+                        .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
+                        .requestMatchers(HttpMethod.GET, "/api/articles/followed").hasRole("USER")
+
+                        // Public access to certain routes (homepage, registration, login)
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/articles/", "/api/articles/*", "/api/articles/published/*", "/api/articles/categories").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/", "api/comments/article/*", "api/comments/user/*", "api/comments/*").permitAll()
 
-                        .anyRequest().authenticated() // All other requests need authentication
+                        // Any other request needs authentication
+                        .anyRequest().authenticated()
                 )
                 // Adding JWT filter, verifying user token and role
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

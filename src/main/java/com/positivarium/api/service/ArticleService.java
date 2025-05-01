@@ -144,8 +144,14 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
-    public void updateArticle(Long id, ArticleDTO articleDTO) throws Exception {
-        Article article = articleRepository.findById(id)
+    public void updateArticle(Long id, ArticleDTO articleDTO, Authentication authentication) throws Exception {
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+        if (username == null) return;
+
+        User user = userService.getUser(username);
+        Long userId = user.getId();
+
+        Article article = articleRepository.findByUserIdAndId(userId, id)
                 .orElseThrow(() -> new Exception("Article not found"));
 
         articleMapping.updateEntityFromDto(articleDTO, article);
