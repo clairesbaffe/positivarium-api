@@ -33,6 +33,18 @@ public class PublisherController {
         return articleService.getDraftsByUser(page, size, authentication);
     }
 
+    @GetMapping("/articles/drafts/{id}")
+    public ArticleDTO getDraftById(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        try{
+            return articleService.getDraftByIdAndByUser(id, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @PostMapping("/articles/")
     public ArticleDTO createArticle(
             @RequestBody ArticleDTO articleDTO,

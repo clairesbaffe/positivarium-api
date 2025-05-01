@@ -99,12 +99,25 @@ public class ArticleService {
                 ? articleRepository.userLikedArticle(userService.getUser(username).getId(), id)
                 : false;
 
-        Article article = articleRepository.findById(id)
+        Article article = articleRepository.findByIdAndIsPublishedTrue(id)
                 .orElseThrow(() -> new Exception("Article not found"));
 
         Long likesCount = articleRepository.countLikesByArticleId(id);
 
         return articleMapping.entityToDtoWithLikes(article, likesCount, liked);
+    }
+
+    public ArticleDTO getDraftByIdAndByUser(Long id, Authentication authentication) throws Exception {
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+        if (username == null) return null;
+
+        User user = userService.getUser(username);
+        Long userId = user.getId();
+
+        Article article = articleRepository.findByIdAndUserIdAndIsPublishedFalse(id, userId)
+                .orElseThrow(() -> new Exception("Article not found"));
+
+        return articleMapping.entityToDto(article);
     }
 
     public Article findArticleById(Long id) throws Exception {

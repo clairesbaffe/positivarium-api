@@ -20,6 +20,8 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
 
     Page<Article> findAllByCategoryIdInAndIsPublishedTrueOrderByPublishedAtDesc(List<Long> categoryIds, Pageable pageable);
 
+    Optional<Article> findByIdAndUserIdAndIsPublishedFalse(Long id, Long userId);
+
     @Query(
             value = "SELECT a.* FROM articles a " +
                     "JOIN users u ON a.user_id = u.id " +
