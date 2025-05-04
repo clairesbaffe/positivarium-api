@@ -1,15 +1,17 @@
 package com.positivarium.api.entity;
 
-import com.positivarium.api.enums.MoodType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Table(name = "moods")
 public class Mood {
@@ -21,9 +23,6 @@ public class Mood {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private MoodType type;
-
-    @ManyToMany(mappedBy = "moods")
-    private Set<JournalEntry> journalEntries = new HashSet<>();
+    @Column(name = "type", nullable = false, length = 50)
+    private String type;
 }

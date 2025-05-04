@@ -1,6 +1,7 @@
 package com.positivarium.api.service;
 
 import com.positivarium.api.dto.JournalEntryDTO;
+import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.entity.JournalEntry;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.mapping.JournalEntryMapping;
@@ -23,7 +24,7 @@ public class JournalService {
     private final JournalEntryMapping journalEntryMapping;
     private final UserService userService;
 
-    public void createEntry(JournalEntryDTO journalEntryDTO, Authentication authentication) throws Exception {
+    public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
         if (username == null) return;
 
@@ -66,7 +67,7 @@ public class JournalService {
         return journalEntryMapping.entityToDto(journalEntry);
     }
 
-    public void updateEntry(Long id, JournalEntryDTO journalEntryDTO, Authentication authentication) throws Exception {
+    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
         if (username == null) return;
 

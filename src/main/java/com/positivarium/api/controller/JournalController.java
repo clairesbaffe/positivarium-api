@@ -1,6 +1,7 @@
 package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.JournalEntryDTO;
+import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.service.JournalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ public class JournalController {
 
     @PostMapping("/")
     public void createEntry(
-            @RequestBody JournalEntryDTO journalEntryDTO,
+            @RequestBody JournalEntryRequestDTO journalEntryDTO,
             Authentication authentication
     ){
         try{
@@ -50,7 +51,7 @@ public class JournalController {
     @PatchMapping("/{id}")
     public void updateEntry(
             @PathVariable Long id,
-            @RequestBody JournalEntryDTO journalEntryDTO,
+            @RequestBody JournalEntryRequestDTO journalEntryDTO,
             Authentication authentication
     ){
         try{

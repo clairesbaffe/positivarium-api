@@ -6,7 +6,6 @@ import lombok.Builder;
 public record MoodDTO(
         Long id,
         String name,
-        String type,
-        String color
+        String type
 ) {
 }

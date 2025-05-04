@@ -38,5 +38,5 @@ public class JournalEntry {
             joinColumns = @JoinColumn(name = "journal_entry_id"),
             inverseJoinColumns = @JoinColumn(name = "mood_id")
     )
-    private Set<Mood> moods = new HashSet<>();
+    private Set<Mood> moods;
 }
