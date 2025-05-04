@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,4 +41,7 @@ public class JournalEntry {
             inverseJoinColumns = @JoinColumn(name = "mood_id")
     )
     private Set<Mood> moods;
+
+    @OneToMany(mappedBy = "journalEntry", cascade = CascadeType.ALL)
+    private List<DailyNewsPreference> dailyNewsPreferences = new ArrayList<>();
 }

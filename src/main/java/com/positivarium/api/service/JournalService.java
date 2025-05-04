@@ -31,6 +31,7 @@ public class JournalService {
     private final UserService userService;
     private final MoodRepository moodRepository;
     private final MoodMapping moodMapping;
+    private final DailyPreferenceService dailyPreferenceService;
 
     public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
@@ -49,6 +50,8 @@ public class JournalService {
 
         JournalEntry journalEntry = journalEntryMapping.dtoToEntity(journalEntryDTO, user);
         journalEntryRepository.save(journalEntry);
+
+        dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO);
     }
 
     public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication){

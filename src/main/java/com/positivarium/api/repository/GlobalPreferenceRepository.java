@@ -16,4 +16,6 @@ public interface GlobalPreferenceRepository extends CrudRepository<GlobalNewsPre
 
     @Transactional
     void deleteByIdAndUserId(Long id, Long userId);
+
+    Iterable<GlobalNewsPreference> findAllByUserId(Long userId);
 }

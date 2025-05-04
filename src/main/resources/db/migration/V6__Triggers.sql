@@ -104,3 +104,8 @@ CREATE TRIGGER set_created_at_journal_entries
 BEFORE INSERT ON journal_entries
 FOR EACH ROW
 EXECUTE FUNCTION set_created_at_column();
+
+CREATE TRIGGER set_created_at_daily_news_preferences
+BEFORE INSERT ON daily_news_preferences
+FOR EACH ROW
+EXECUTE FUNCTION set_created_at_column();

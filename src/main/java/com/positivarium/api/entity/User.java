@@ -73,4 +73,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<GlobalNewsPreference> globalNewsPreferences = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<DailyNewsPreference> dailyNewsPreferences = new ArrayList<>();
 }
