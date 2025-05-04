@@ -2,11 +2,14 @@ package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
+import com.positivarium.api.dto.MoodDTO;
 import com.positivarium.api.service.JournalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/journal")
@@ -71,5 +74,10 @@ public class JournalController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/moods")
+    public List<MoodDTO> getAllMoods(){
+        return journalService.getAllMoods();
     }
 }

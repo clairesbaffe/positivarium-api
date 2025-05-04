@@ -2,10 +2,14 @@ package com.positivarium.api.service;
 
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
+import com.positivarium.api.dto.MoodDTO;
 import com.positivarium.api.entity.JournalEntry;
+import com.positivarium.api.entity.Mood;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.mapping.JournalEntryMapping;
+import com.positivarium.api.mapping.MoodMapping;
 import com.positivarium.api.repository.JournalEntryRepository;
+import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +29,8 @@ public class JournalService {
     private final JournalEntryRepository journalEntryRepository;
     private final JournalEntryMapping journalEntryMapping;
     private final UserService userService;
+    private final MoodRepository moodRepository;
+    private final MoodMapping moodMapping;
 
     public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
@@ -90,5 +98,17 @@ public class JournalService {
         journalEntryRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new Exception("Entry not found"));
         journalEntryRepository.deleteByIdAndUserId(id, userId);
+    }
+
+    public List<MoodDTO> getAllMoods(){
+        Iterable<Mood> moods = moodRepository.findAll();
+
+        List<MoodDTO> moodDTOs = new ArrayList<>();
+
+        for (Mood mood : moods) {
+            moodDTOs.add(moodMapping.entityToDto(mood));
+        }
+
+        return moodDTOs;
     }
 }
