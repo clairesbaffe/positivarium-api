@@ -97,7 +97,9 @@ public class SecurityConfiguration {
                         // Access control based on roles
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/publisher/**").hasRole("PUBLISHER")
-                        .requestMatchers("/api/user/**", "/api/articles/followed", "/api/journal/**").hasRole("USER")
+                        .requestMatchers("/api/user/**", "/api/articles/followed").hasRole("USER")
+                        .requestMatchers("/api/journal/**", "/api/global_preferences/**").hasRole("USER")
+
 
                         .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
                         .requestMatchers(HttpMethod.GET, "/api/articles/followed").hasRole("USER")

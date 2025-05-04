@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,4 +27,7 @@ public class Mood {
 
     @Column(name = "type", nullable = false, length = 50)
     private String type;
+
+    @OneToMany(mappedBy = "mood", cascade = CascadeType.ALL)
+    private List<GlobalNewsPreference> globalNewsPreferences = new ArrayList<>();
 }

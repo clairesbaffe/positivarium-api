@@ -70,4 +70,7 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Notification> receivedNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<GlobalNewsPreference> globalNewsPreferences = new ArrayList<>();
 }
