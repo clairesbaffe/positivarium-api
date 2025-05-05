@@ -51,7 +51,7 @@ public class JournalService {
         JournalEntry journalEntry = journalEntryMapping.dtoToEntity(journalEntryDTO, user);
         journalEntryRepository.save(journalEntry);
 
-        dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO);
+        dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, false);
     }
 
     public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication){
@@ -89,6 +89,8 @@ public class JournalService {
                 .orElseThrow(() -> new Exception("Entry not found"));
         journalEntryMapping.updateEntityFromDto(journalEntryDTO, journalEntry);
         journalEntryRepository.save(journalEntry);
+
+        dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, true);
     }
 
     public void deleteEntry(Long id, Authentication authentication) throws Exception {
