@@ -7,6 +7,7 @@ import com.positivarium.api.service.PublisherRequestService;
 import com.positivarium.api.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class AdminController {
     private final PublisherRequestService publisherRequestService;
     private final ArticleService articleService;
 
+    @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
     public void deletePublishedArticleById(@PathVariable Long id){
         try{
@@ -27,6 +29,7 @@ public class AdminController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/reports/articles/{id}")
     public void markArticleReportAsRead(
             @PathVariable Long id
@@ -58,6 +61,7 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/reports/comments/{id}")
     public void markCommentReportAsRead(
             @PathVariable Long id
@@ -116,6 +120,7 @@ public class AdminController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("publisher_requests/{id}")
     public void updatePublisherRequestStatus(
             @PathVariable Long id,

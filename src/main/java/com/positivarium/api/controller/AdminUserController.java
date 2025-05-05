@@ -5,6 +5,7 @@ import com.positivarium.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class AdminUserController {
         return userService.getUserById(id);
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PatchMapping("/ban/{username}")
     public void banUser(@PathVariable String username){
         try{
@@ -41,6 +43,7 @@ public class AdminUserController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PatchMapping("/unban/{username}")
     public void unbanUser(@PathVariable String username){
         try{
@@ -50,6 +53,7 @@ public class AdminUserController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PutMapping("/publisher/{username}")
     public void grantPublisher(@PathVariable String username){
         try{
@@ -59,6 +63,7 @@ public class AdminUserController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PutMapping("/admin/{username}")
     public void grantAdmin(@PathVariable String username){
         try{

@@ -72,27 +72,14 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // CSRF deactivation, required for JWT
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS config application
                 .authorizeHttpRequests(authorize -> authorize
+                        // BAN restrictions are set in controllers via annotation @PreAuthorize("!hasRole('BAN')")
+
                         // Banned users cannot perform sensitive actions (admin, publisher)
-                        .requestMatchers(HttpMethod.POST, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.PUT, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**", "/api/publisher/**").not().hasRole("BAN")
-
                         // Banned user can still unfollow and cancel publisher request
-                        .requestMatchers(HttpMethod.POST, "/api/user/follow/**", "/api/user/publisher_request/").not().hasRole("BAN")
-
                         // Banned users cannot post or delete comments
-                        .requestMatchers(HttpMethod.POST, "/api/comments/**").not().hasRole("BAN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").not().hasRole("BAN")
-
                         // Banned users cannot like but they can unlike
-                        .requestMatchers(HttpMethod.POST, "/api/likes/article/*").not().hasRole("BAN")
-
                         // Banned users cannot report articles or comments
-                        .requestMatchers(HttpMethod.POST, "/api/reports/articles/*", "/api/reports/comments/*").not().hasRole("BAN")
-
                         // Banned users cannot delete articles
-                        .requestMatchers(HttpMethod.DELETE, "/api/articles/*").not().hasRole("BAN")
 
                         // Access control based on roles
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

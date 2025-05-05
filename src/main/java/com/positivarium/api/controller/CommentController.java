@@ -5,6 +5,7 @@ import com.positivarium.api.dto.CommentWithArticleDTO;
 import com.positivarium.api.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class CommentController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/{articleId}")
     public void createComment(
             @RequestBody CommentDTO commentDTO,
@@ -65,6 +67,7 @@ public class CommentController {
         return commentService.getUserComments(page, size, username);
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/{id}")
     public void deleteComment(
             @PathVariable Long id,

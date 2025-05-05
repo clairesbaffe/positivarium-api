@@ -6,6 +6,7 @@ import com.positivarium.api.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class PublisherController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/articles/")
     public ArticleDTO createArticle(
             @RequestBody ArticleDTO articleDTO,
@@ -53,6 +55,7 @@ public class PublisherController {
         return articleService.createArticle(articleDTO, authentication);
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/articles/publish/{id}")
     public void publishArticle(@PathVariable Long id, Authentication authentication){
         try{
@@ -62,6 +65,7 @@ public class PublisherController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @PutMapping("/articles/{id}")
     public void updateArticle(
             @PathVariable Long id,
@@ -75,6 +79,7 @@ public class PublisherController {
         }
     }
 
+    @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
     public void deleteArticleById(
             @PathVariable Long id,

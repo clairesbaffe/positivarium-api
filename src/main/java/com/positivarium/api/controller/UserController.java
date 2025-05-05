@@ -6,6 +6,7 @@ import com.positivarium.api.service.FollowService;
 import com.positivarium.api.service.PublisherRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ public class UserController {
     private final PublisherRequestService publisherRequestService;
     private final FollowService followService;
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/publisher_request")
     public void createPublisherRequest(
             @RequestBody PublisherRequestDTO publisherRequestDTO,
@@ -25,6 +27,7 @@ public class UserController {
         publisherRequestService.createPublisherRequest(publisherRequestDTO, authentication);
     }
 
+    // Banned user can still cancel publisher request
     @PostMapping("/publisher_request/cancel/{id}")
     public void cancelPublisherRequest(
             @PathVariable Long id,
@@ -47,6 +50,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/follow/{publisherId}")
     public void followPublisher(
             @PathVariable Long publisherId,
@@ -59,6 +63,7 @@ public class UserController {
         }
     }
 
+    // Banned user can still unfollow
     @DeleteMapping("/follow/{publisherId}")
     public void unfollowPublisher(
             @PathVariable Long publisherId,

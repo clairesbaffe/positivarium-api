@@ -4,6 +4,7 @@ import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class LikeController {
 
     private final LikeService likeService;
 
+    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/article/{articleId}")
     public void like(
             @PathVariable Long articleId,
@@ -22,6 +24,7 @@ public class LikeController {
         likeService.like(articleId, authentication);
     }
 
+    // Banned users cannot like but they can unlike
     @DeleteMapping("/article/{articleId}")
     public void unlike(
             @PathVariable Long articleId,
