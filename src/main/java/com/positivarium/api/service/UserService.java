@@ -1,12 +1,18 @@
 package com.positivarium.api.service;
 
+import com.positivarium.api.dto.UserDTO;
+import com.positivarium.api.dto.UserWithRolesDTO;
 import com.positivarium.api.entity.Role;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.mapping.UserMapping;
+import com.positivarium.api.mapping.UserWithRolesMapping;
 import com.positivarium.api.repository.RoleRepository;
 import com.positivarium.api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,21 +24,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
+    private final UserMapping userMapping;
+    private final UserWithRolesMapping userWithRolesMapping;
 
-    @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.roleRepository = roleRepository;
+    public User getCurrentUser(Authentication authentication){
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+        if(username == null) throw new RuntimeException("User not found");
+
+        return getUser(username);
     }
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public Page<UserWithRolesDTO> getAllUsers(int pageNumber, int pageSize){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> users = userRepository.findAll(pageable);
+        return users.map(userWithRolesMapping::entityToDto);
+    }
+
+    public UserWithRolesDTO getUserById(Long id){
+        User user = findUserById(id);
+        return userWithRolesMapping.entityToDto(user);
+    }
+
+    public UserWithRolesDTO getOwnProfile(Authentication authentication){
+        User user = getCurrentUser(authentication);
+        return getUserById(user.getId());
+    }
+
+    public UserDTO getPublisherById(Long id) throws Exception {
+        User user = userRepository.findByIdAndRolesNameContaining(id, "ROLE_PUBLISHER")
+                .orElseThrow(() -> new Exception("User not found"));
+        return userMapping.entityToDto(user);
     }
 
     public User registerNewUserAccount(User user) {

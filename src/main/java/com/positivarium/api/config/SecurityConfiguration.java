@@ -108,6 +108,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/articles/", "/api/articles/*", "/api/articles/published/*", "/api/articles/categories").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/comments/", "api/comments/article/*", "api/comments/user/*", "api/comments/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/profile/publisher/*").permitAll()
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()
