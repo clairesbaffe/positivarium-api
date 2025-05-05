@@ -171,26 +171,17 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
+    public void deletePublishedArticle(Long id) throws Exception {
+        // ONLY FOR ADMINS
+        if(!articleRepository.existsByIdAndIsPublishedTrue(id)) throw new Exception("Article not found");
+        articleRepository.deleteByIdAndIsPublishedTrue(id);
+    }
+
     public void deleteArticle(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        List<String> roles = userService.getUserRoles(username);
-
-        if(roles.contains("ROLE_ADMIN")){
-            // admin can only delete published articles
-            articleRepository.findByIdAndIsPublishedTrue(id)
-                    .orElseThrow(() -> new Exception("Article not found"));
-            articleRepository.deleteByIdAndIsPublishedTrue(id);
-        } else { // ROLE_PUBLISHER
-            // publisher can only delete their own articles
-            User user = userService.getUser(username);
-            if (user != null) {
-                Long userId = user.getId();
-                articleRepository.findByUserIdAndId(userId, id)
-                        .orElseThrow(() -> new Exception("Article not found"));
-                articleRepository.deleteByUserIdAndId(userId, id);
-            }
-        }
+        // ONLY FOR PUBLISHERS
+        User user = userService.getCurrentUser(authentication);
+        Long userId = user.getId();
+        if(!articleRepository.existsByIdAndUserId(id, userId)) throw new Exception("Article not found");
+        articleRepository.deleteByUserIdAndId(userId, id);
     }
 }

@@ -72,16 +72,4 @@ public class ArticleController {
     ){
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
     }
-
-    @DeleteMapping("/{id}")
-    public void deleteArticle(@PathVariable Long id, Authentication authentication){
-        // if role is publisher, check if article is owned by current user
-        // if role is admin, do not allow drafts delete
-        // which one needs to be checked before the other in case a user has both ?
-        try{
-            articleService.deleteArticle(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

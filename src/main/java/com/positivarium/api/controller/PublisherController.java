@@ -75,4 +75,16 @@ public class PublisherController {
         }
     }
 
+    @DeleteMapping("/articles/{id}")
+    public void deleteArticleById(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        try{
+            articleService.deleteArticle(id, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

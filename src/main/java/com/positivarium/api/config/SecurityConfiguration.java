@@ -100,8 +100,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/user/**", "/api/articles/followed").hasRole("USER")
                         .requestMatchers("/api/journal/**", "/api/global_preferences/**").hasRole("USER")
 
-
-                        .requestMatchers(HttpMethod.DELETE,"/api/articles/").hasAnyRole("ADMIN", "PUBLISHER")
                         .requestMatchers(HttpMethod.GET, "/api/articles/followed").hasRole("USER")
 
                         // Public access to certain routes (homepage, registration, login)

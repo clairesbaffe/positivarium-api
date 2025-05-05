@@ -2,6 +2,7 @@ package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.*;
 import com.positivarium.api.enums.PublisherRequestStatusEnum;
+import com.positivarium.api.service.ArticleService;
 import com.positivarium.api.service.PublisherRequestService;
 import com.positivarium.api.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,16 @@ public class AdminController {
 
     private final ReportService reportService;
     private final PublisherRequestService publisherRequestService;
+    private final ArticleService articleService;
+
+    @DeleteMapping("/articles/{id}")
+    public void deletePublishedArticleById(@PathVariable Long id){
+        try{
+            articleService.deletePublishedArticle(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @PostMapping("/reports/articles/{id}")
     public void markArticleReportAsRead(

@@ -30,13 +30,19 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
                     "AND a.is_published = true",
             nativeQuery = true
     )
-    public Page<Article> findAllPublishedByFollowedPublishers(Long userId, Pageable pageable);
+    Page<Article> findAllPublishedByFollowedPublishers(Long userId, Pageable pageable);
 
     Optional<Article> findByUserIdAndId(Long userId, Long articleId);
+
+    boolean existsByIdAndUserId(Long id, Long userId);
+
     @Transactional
     void deleteByUserIdAndId(Long userId, Long articleId);
 
     Optional<Article> findByIdAndIsPublishedTrue(Long id);
+
+    boolean existsByIdAndIsPublishedTrue(Long id);
+
     @Transactional
     void deleteByIdAndIsPublishedTrue(Long id);
 
@@ -49,14 +55,14 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
             "WHERE l.user_id = ?1",
         nativeQuery = true
     )
-    public Page<Article> findAllLikedByUser(Long userId, Pageable pageable);
+    Page<Article> findAllLikedByUser(Long userId, Pageable pageable);
 
     @Query(
             value = "SELECT COUNT(*) FROM likes " +
                     "WHERE article_id = ?1",
             nativeQuery = true
     )
-    public Long countLikesByArticleId(Long articleId);
+    Long countLikesByArticleId(Long articleId);
 
     @Query(
             value = "SELECT EXISTS(" +
@@ -65,6 +71,6 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
                     ") AS liked",
             nativeQuery = true
     )
-    public Boolean userLikedArticle(Long userId, Long articleId);
+    Boolean userLikedArticle(Long userId, Long articleId);
 
 }
