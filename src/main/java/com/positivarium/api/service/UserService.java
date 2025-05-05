@@ -1,6 +1,9 @@
 package com.positivarium.api.service;
 
+import com.positivarium.api.config.JwtTokenProvider;
+import com.positivarium.api.dto.PasswordUpdateDTO;
 import com.positivarium.api.dto.UserDTO;
+import com.positivarium.api.dto.UserRequestDTO;
 import com.positivarium.api.dto.UserWithRolesDTO;
 import com.positivarium.api.entity.Role;
 import com.positivarium.api.entity.User;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +36,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserMapping userMapping;
     private final UserWithRolesMapping userWithRolesMapping;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public User getCurrentUser(Authentication authentication){
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
@@ -73,6 +78,7 @@ public class UserService {
         List<Role> rolesList = new ArrayList<>(Collections.singleton(defaultRole));
         user.setRoles(rolesList);
 
+        System.out.println(user.getPassword());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -200,6 +206,35 @@ public class UserService {
                 }
             } else throw new Exception("User is already admin");
         } else throw new Exception("Banned users cannot be granted admin");
+    }
+
+    public ResponseCookie updateProfile(UserRequestDTO userRequestDTO, Authentication authentication){
+        User user = getCurrentUser(authentication);
+        user.setUsername(userRequestDTO.username());
+        user.setEmail(userRequestDTO.email());
+        userRepository.save(user);
+
+        List<String> roles = getUserRoles(user);
+
+        String token = jwtTokenProvider.generateToken(user.getUsername(), roles);
+        return ResponseCookie.from("access_token", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(60 * 15) // 15 mn
+                .build();
+
+    }
+
+    public void updatePassword(PasswordUpdateDTO passwordUpdateDTO, Authentication authentication) throws Exception {
+        User user = getCurrentUser(authentication);
+        if (bCryptPasswordEncoder.matches(passwordUpdateDTO.oldPassword(), user.getPassword())) {
+            user.setPassword(bCryptPasswordEncoder.encode(passwordUpdateDTO.newPassword()));
+            userRepository.save(user);
+        } else {
+            throw new Exception("Old password did not match");
+        }
     }
 
 }
