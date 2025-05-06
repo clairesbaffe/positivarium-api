@@ -59,7 +59,7 @@ public class CommentController {
     }
 
     @GetMapping("/user/{username}")
-    public Page<CommentDTO> getUserComments(
+    public Page<CommentWithArticleDTO> getUserComments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable String username
@@ -74,7 +74,7 @@ public class CommentController {
             Authentication authentication
     ){
         try{
-            commentService.deleteComment(id, authentication);
+            commentService.deleteOwnComment(id, authentication);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

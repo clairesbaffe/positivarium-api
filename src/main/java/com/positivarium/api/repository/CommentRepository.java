@@ -16,6 +16,8 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
 
     Page<Comment> findAllByUserUsername(Pageable pageable, String username);
 
+    Optional<Comment> findByUserIdAndId(Long userId, Long id);
+
     Optional<Comment> findByUserUsernameAndId(String username, Long id);
     @Transactional
     void deleteByUserUsernameAndId(String username, Long articleId);

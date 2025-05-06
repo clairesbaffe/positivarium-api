@@ -44,15 +44,12 @@ public class CommentService {
     }
 
     public void createComment(CommentDTO commentDTO, Long articleId, Authentication authentication) throws Exception{
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
+        User user = userService.getCurrentUser(authentication);
 
         try {
             Comment comment = commentMapping.dtoToEntity(commentDTO);
             comment.setUser(user);
-            comment.setArticle(articleService.findArticleById(articleId));
+            comment.setArticle(articleService.findPublishedArticleById(articleId));
 
             commentRepository.save(comment);
         } catch (Exception e) {
@@ -66,26 +63,23 @@ public class CommentService {
         return comments.map(commentMapping::entityToDto);
     }
 
-    public Page<CommentDTO> getUserComments(int pageNumber, int pageSize, String username){
+    public Page<CommentWithArticleDTO> getUserComments(int pageNumber, int pageSize, String username){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Comment> comments = commentRepository.findAllByUserUsername(pageable, username);
-        return comments.map(commentMapping::entityToDto);
+        return comments.map(commentWithArticleMapping::entityToDto);
     }
 
-    public void deleteComment(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void deleteAnyComment(Long id) throws Exception {
+        // ONLY FOR ADMIN
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new Exception("Comment not found"));
+        commentRepository.delete(comment);
+    }
 
-        List<String> roles = userService.getUserRoles(username);
-
-        if(roles.contains("ROLE_ADMIN")){
-            // admin can delete any comment
-            commentRepository.deleteById(id);
-        } else {
-            // other roles can only delete their own comments
-            commentRepository.findByUserUsernameAndId(username, id)
-                    .orElseThrow(() -> new Exception("Comment not found"));
-            commentRepository.deleteByUserUsernameAndId(username, id);
-        }
+    public void deleteOwnComment(Long id, Authentication authentication) throws Exception {
+        User user = userService.getCurrentUser(authentication);
+        Comment comment = commentRepository.findByUserIdAndId(user.getId(), id)
+                .orElseThrow(() -> new Exception("Comment not found"));
+        commentRepository.delete(comment);
     }
 }

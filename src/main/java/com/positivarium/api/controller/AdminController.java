@@ -3,6 +3,7 @@ package com.positivarium.api.controller;
 import com.positivarium.api.dto.*;
 import com.positivarium.api.enums.PublisherRequestStatusEnum;
 import com.positivarium.api.service.ArticleService;
+import com.positivarium.api.service.CommentService;
 import com.positivarium.api.service.PublisherRequestService;
 import com.positivarium.api.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,23 @@ public class AdminController {
     private final ReportService reportService;
     private final PublisherRequestService publisherRequestService;
     private final ArticleService articleService;
+    private final CommentService commentService;
 
     @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
     public void deletePublishedArticleById(@PathVariable Long id){
         try{
             articleService.deletePublishedArticle(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PreAuthorize("!hasRole('BAN')")
+    @DeleteMapping("/comments/{id}")
+    public void deleteCommentById(@PathVariable Long id){
+        try{
+            commentService.deleteAnyComment(id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
