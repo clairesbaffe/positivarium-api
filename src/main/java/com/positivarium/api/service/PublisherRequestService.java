@@ -27,10 +27,7 @@ public class PublisherRequestService {
             PublisherRequestDTO publisherRequestDTO,
             Authentication authentication
     ){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
+        User user = userService.getCurrentUser(authentication);
 
         PublisherRequest publisherRequest = publisherRequestMapping.dtoToEntity(publisherRequestDTO, user);
         publisherRequest.setStatus(PublisherRequestStatusEnum.PENDING);
@@ -57,25 +54,17 @@ public class PublisherRequestService {
     }
 
     public Page<PublisherRequestDTO> getPublisherRequestsByUser(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<PublisherRequest> publisherRequests = publisherRequestRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+
+        Page<PublisherRequest> publisherRequests = publisherRequestRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
         return publisherRequests.map(publisherRequestMapping::entityToDto);
     }
 
     public void cancelPublisherRequest(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        PublisherRequest publisherRequest = publisherRequestRepository.findByUserIdAndId(userId, id)
+        PublisherRequest publisherRequest = publisherRequestRepository.findByUserIdAndId(user.getId(), id)
                 .orElseThrow(() -> new Exception("Publisher request not found"));
 
         publisherRequest.setStatus(PublisherRequestStatusEnum.CANCELLED);

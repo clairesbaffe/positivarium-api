@@ -39,7 +39,6 @@ public class ArticleService {
         if (username == null) return null;
 
         User user = userService.getUser(username);
-        if (user == null) return null;
 
         Long userId = user.getId();
 
@@ -53,16 +52,10 @@ public class ArticleService {
     }
 
     public Page<SimpleArticleDTO> getDraftsByUser(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        if (user == null) return null;
-
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Article> articles = articleRepository.findByUserIdAndIsPublishedFalseOrderByCreatedAtDesc(userId, pageable);
+
+        Page<Article> articles = articleRepository.findByUserIdAndIsPublishedFalseOrderByCreatedAtDesc(user.getId(), pageable);
         return articles.map(simpleArticleMapping::entityToDto);
     }
 
@@ -76,16 +69,10 @@ public class ArticleService {
     }
 
     public Page<SimpleArticleDTO> getPublishedFollowedPublishersArticles(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        if (user == null) return null;
-
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Article> articles = articleRepository.findAllPublishedByFollowedPublishers(userId, pageable);
+
+        Page<Article> articles = articleRepository.findAllPublishedByFollowedPublishers(user.getId(), pageable);
         return articles.map(article -> {
             Long likesCount = articleRepository.countLikesByArticleId(article.getId());
             return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
@@ -108,15 +95,10 @@ public class ArticleService {
     }
 
     public ArticleDTO getDraftByIdAndByUser(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        Article article = articleRepository.findByIdAndUserIdAndIsPublishedFalse(id, userId)
+        Article article = articleRepository.findByIdAndUserIdAndIsPublishedFalse(id, user.getId())
                 .orElseThrow(() -> new Exception("Article not found"));
-
         return articleMapping.entityToDto(article);
     }
 
@@ -131,10 +113,7 @@ public class ArticleService {
     }
 
     public ArticleDTO createArticle(ArticleDTO articleDTO, Authentication authentication) {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
+        User user = userService.getCurrentUser(authentication);
 
         Article article = articleMapping.dtoToEntity(articleDTO);
         article.setUser(user);
@@ -146,30 +125,19 @@ public class ArticleService {
     }
 
     public void publishArticle(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        if (user == null) return;
-
-        Long userId = user.getId();
-
-        Article article = articleRepository.findByUserIdAndId(userId, id)
+        Article article = articleRepository.findByUserIdAndId(user.getId(), id)
                 .orElseThrow(() -> new Exception("Article not found"));
-
         article.setPublished(true);
 
         articleRepository.save(article);
     }
 
     public void updateArticle(Long id, ArticleDTO articleDTO, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        Article article = articleRepository.findByUserIdAndId(userId, id)
+        Article article = articleRepository.findByUserIdAndId(user.getId(), id)
                 .orElseThrow(() -> new Exception("Article not found"));
 
         articleMapping.updateEntityFromDto(articleDTO, article);

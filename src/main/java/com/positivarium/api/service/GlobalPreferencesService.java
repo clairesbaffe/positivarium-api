@@ -22,24 +22,17 @@ public class GlobalPreferencesService {
     private final UserService userService;
 
     public void addGlobalPreference(GlobalPreferenceRequestDTO globalPreferenceDTO, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
+        User user = userService.getCurrentUser(authentication);
 
         GlobalNewsPreference globalNewsPreference = globalPreferenceMapping.dtoToEntity(globalPreferenceDTO, user);
         globalPreferenceRepository.save(globalNewsPreference);
     }
 
     public Page<GlobalPreferenceDTO> getAllGlobalPreferences(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<GlobalNewsPreference> globalNewsPreferences = globalPreferenceRepository.findAllByUserId(userId, pageable);
+
+        Page<GlobalNewsPreference> globalNewsPreferences = globalPreferenceRepository.findAllByUserId(user.getId(), pageable);
         return globalNewsPreferences.map(globalPreferenceMapping::entityToDto);
     }
 
@@ -48,13 +41,9 @@ public class GlobalPreferencesService {
             GlobalPreferenceRequestDTO globalPreferenceRequestDTO,
             Authentication authentication
     ) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, userId)
+        GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new Exception("Global preference not found"));
 
         globalPreferenceMapping.updateEntityFromDto(globalNewsPreference, globalPreferenceRequestDTO);
@@ -62,15 +51,11 @@ public class GlobalPreferencesService {
     }
 
     public void deleteGlobalPreference(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, userId)
+        GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new Exception("Global preference not found"));
 
-        globalPreferenceRepository.deleteByIdAndUserId(id, userId);
+        globalPreferenceRepository.delete(globalNewsPreference);
     }
 }

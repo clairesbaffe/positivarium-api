@@ -34,14 +34,10 @@ public class JournalService {
     private final DailyPreferenceService dailyPreferenceService;
 
     public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
+        User user = userService.getCurrentUser(authentication);
 
         // check if one was already created today
-        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
+        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
         lastJournalEntry.ifPresent(entry -> {
             if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now())) {
                 throw new RuntimeException("An entry was already created today");
@@ -55,37 +51,25 @@ public class JournalService {
     }
 
     public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+
+        Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
         return journalEntries.map(journalEntryMapping::entityToDto);
     }
 
     public JournalEntryDTO getEntryById(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, userId)
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new Exception("Entry not found"));
         return journalEntryMapping.entityToDto(journalEntry);
     }
 
     public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, userId)
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new Exception("Entry not found"));
         journalEntryMapping.updateEntityFromDto(journalEntryDTO, journalEntry);
         journalEntryRepository.save(journalEntry);
@@ -94,15 +78,11 @@ public class JournalService {
     }
 
     public void deleteEntry(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        journalEntryRepository.findByIdAndUserId(id, userId)
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new Exception("Entry not found"));
-        journalEntryRepository.deleteByIdAndUserId(id, userId);
+        journalEntryRepository.delete(journalEntry);
     }
 
     public List<MoodDTO> getAllMoods(){

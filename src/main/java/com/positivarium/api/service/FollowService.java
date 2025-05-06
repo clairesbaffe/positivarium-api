@@ -20,10 +20,7 @@ public class FollowService {
     private final UserMapping userMapping;
 
     public void followPublisher(Long publisherId, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) throw new Exception("User not found");
-
-        User user = userService.getUser(username);
+        User user = userService.getCurrentUser(authentication);
         User publisher = userService.findUserById(publisherId);
 
         List<String> publisherRoles = userService.getUserRoles(publisher.getUsername());
@@ -38,13 +35,9 @@ public class FollowService {
     }
 
     public void unfollowPublisher(Long publisherId, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) throw new Exception("User not found");
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        if(!userService.following(userId, publisherId)) throw new Exception("Publisher is not followed");
+        if(!userService.following(user.getId(), publisherId)) throw new Exception("Publisher is not followed");
 
         User publisher = userService.findUserById(publisherId);
 
@@ -56,14 +49,10 @@ public class FollowService {
     }
 
     public Page<UserDTO> getFollowing(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<User> following = userService.findFollowing(userId, pageable);
+
+        Page<User> following = userService.findFollowing(user.getId(), pageable);
         return following.map(userMapping::entityToDto);
     }
 }

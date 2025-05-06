@@ -27,11 +27,7 @@ public class LikeService {
     private final SimpleArticleMapping simpleArticleMapping;
 
     public void like(Long articleId, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
-        if (user == null) return;
+        User user = userService.getCurrentUser(authentication);
 
         try{
             Article article = articleService.findArticleById(articleId);
@@ -47,11 +43,7 @@ public class LikeService {
     }
 
     public void unlike(Long articleId, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
-        if (user == null) return;
+        User user = userService.getCurrentUser(authentication);
 
         try{
             Article article = articleService.findArticleById(articleId);
@@ -67,16 +59,10 @@ public class LikeService {
     }
 
     public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        if (user == null) return null;
-
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Article> articles = articleRepository.findAllLikedByUser(userId, pageable);
+
+        Page<Article> articles = articleRepository.findAllLikedByUser(user.getId(), pageable);
         return articles.map(simpleArticleMapping::entityToDto);
     }
 }
