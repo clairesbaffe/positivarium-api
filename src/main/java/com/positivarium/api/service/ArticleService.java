@@ -171,17 +171,35 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
+    public void updateDraft(Long id, ArticleDTO articleDTO, Authentication authentication) throws Exception {
+        User user = userService.getCurrentUser(authentication);
+        Article article = articleRepository.findByUserIdAndIdAndIsPublishedFalse(user.getId(), id)
+                .orElseThrow(() -> new Exception("Article not found"));
+
+        articleMapping.updateEntityFromDto(articleDTO, article);
+        articleRepository.save(article);
+    }
+
     public void deletePublishedArticle(Long id) throws Exception {
         // ONLY FOR ADMINS
-        if(!articleRepository.existsByIdAndIsPublishedTrue(id)) throw new Exception("Article not found");
-        articleRepository.deleteByIdAndIsPublishedTrue(id);
+        Article article = articleRepository.findByIdAndIsPublishedTrue(id)
+                .orElseThrow(() -> new Exception("Article not found"));
+        articleRepository.delete(article);
     }
 
     public void deleteArticle(Long id, Authentication authentication) throws Exception {
+        // ONLY FOR NOT BANNED PUBLISHERS
+        User user = userService.getCurrentUser(authentication);
+        Article article = articleRepository.findByUserIdAndId(user.getId(), id)
+                .orElseThrow(() -> new Exception("Article not found"));
+        articleRepository.delete(article);
+    }
+
+    public void deleteDraft(Long id, Authentication authentication) throws Exception {
         // ONLY FOR PUBLISHERS
         User user = userService.getCurrentUser(authentication);
-        Long userId = user.getId();
-        if(!articleRepository.existsByIdAndUserId(id, userId)) throw new Exception("Article not found");
-        articleRepository.deleteByUserIdAndId(userId, id);
+        Article article = articleRepository.findByUserIdAndIdAndIsPublishedFalse(user.getId(), id)
+                .orElseThrow(() -> new Exception("Article not found"));
+        articleRepository.delete(article);
     }
 }

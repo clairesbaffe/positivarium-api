@@ -32,20 +32,15 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
     )
     Page<Article> findAllPublishedByFollowedPublishers(Long userId, Pageable pageable);
 
+
     Optional<Article> findByUserIdAndId(Long userId, Long articleId);
-
-    boolean existsByIdAndUserId(Long id, Long userId);
-
-    @Transactional
-    void deleteByUserIdAndId(Long userId, Long articleId);
 
     Optional<Article> findByIdAndIsPublishedTrue(Long id);
 
-    boolean existsByIdAndIsPublishedTrue(Long id);
+    Optional<Article> findByUserIdAndIdAndIsPublishedFalse(Long userId, Long articleId);
 
-    @Transactional
-    void deleteByIdAndIsPublishedTrue(Long id);
 
+    // LIKES
     @Query(
         value = "SELECT a.* FROM articles a " +
             "JOIN likes l ON l.article_id = a.id " +

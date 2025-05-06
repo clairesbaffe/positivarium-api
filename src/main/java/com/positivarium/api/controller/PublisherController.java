@@ -46,7 +46,6 @@ public class PublisherController {
         }
     }
 
-    @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/articles/")
     public ArticleDTO createArticle(
             @RequestBody ArticleDTO articleDTO,
@@ -79,6 +78,19 @@ public class PublisherController {
         }
     }
 
+    @PutMapping("/articles/drafts/{id}")
+    public void updateDraft(
+            @PathVariable Long id,
+            @RequestBody ArticleDTO articleDTO,
+            Authentication authentication
+    ){
+        try{
+            articleService.updateDraft(id, articleDTO, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
     public void deleteArticleById(
@@ -87,6 +99,18 @@ public class PublisherController {
     ){
         try{
             articleService.deleteArticle(id, authentication);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/articles/drafts/{id}")
+    public void deleteDraftById(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        try{
+            articleService.deleteDraft(id, authentication);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

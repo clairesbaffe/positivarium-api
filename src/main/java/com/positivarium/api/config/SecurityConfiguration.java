@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // Allows PreAuthorize annotations in controllers
 public class SecurityConfiguration {
 
     // CORS allowed origins injection. This makes the app more flexible
@@ -77,7 +80,7 @@ public class SecurityConfiguration {
                         // Banned users cannot perform sensitive actions (admin, publisher)
                         // Banned user can still unfollow and cancel publisher request
                         // Banned users cannot post or delete comments
-                        // Banned users cannot like but they can unlike
+                        // Banned users cannot like, but they can unlike
                         // Banned users cannot report articles or comments
                         // Banned users cannot delete articles
 
