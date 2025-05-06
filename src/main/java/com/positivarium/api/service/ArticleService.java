@@ -27,7 +27,7 @@ public class ArticleService {
 
     public Page<SimpleArticleDTO> getArticles(int pageNumber, int pageSize){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Article> articles = articleRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Article> articles = articleRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc(pageable);
 
         return articles.map(article -> {
             Long likesCount = articleRepository.countLikesByArticleId(article.getId());
