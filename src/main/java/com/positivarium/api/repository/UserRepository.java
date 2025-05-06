@@ -27,6 +27,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findUsersFollowedBy(@Param("userId") Long userId, Pageable pageable);
 
     Optional<User> findByIdAndRolesNameContaining(Long id, String rolePart);
-
-    boolean existsByIdAndPassword(Long id, String password);
 }

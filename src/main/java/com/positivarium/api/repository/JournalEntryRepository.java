@@ -1,7 +1,6 @@
 package com.positivarium.api.repository;
 
 import com.positivarium.api.entity.JournalEntry;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -15,7 +14,4 @@ public interface JournalEntryRepository extends CrudRepository<JournalEntry, Lon
     Page<JournalEntry> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     Optional<JournalEntry> findByIdAndUserId(Long id, Long userId);
-
-    @Transactional
-    void deleteByIdAndUserId(Long id, Long userId);
 }

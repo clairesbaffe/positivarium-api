@@ -1,9 +1,6 @@
 package com.positivarium.api.mapping;
 
-import com.positivarium.api.dto.ArticleReportDTO;
 import com.positivarium.api.dto.CommentReportDTO;
-import com.positivarium.api.entity.Article;
-import com.positivarium.api.entity.ArticleReport;
 import com.positivarium.api.entity.Comment;
 import com.positivarium.api.entity.CommentReport;
 import org.springframework.stereotype.Component;

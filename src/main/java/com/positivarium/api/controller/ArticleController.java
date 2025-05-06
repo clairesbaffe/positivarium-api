@@ -52,7 +52,11 @@ public class ArticleController {
     ){
         // manage depending on user role and journal status
         // potentially use credentials to get user roles, but credentials must not be mandatory
-        return articleService.getPublishedArticlesByUser(page, size, username);
+        try{
+            return articleService.getPublishedArticlesByUser(page, size, username);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/categories")

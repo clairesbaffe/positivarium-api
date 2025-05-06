@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ArticleReportRepository extends CrudRepository<ArticleReport, Long> {
 
-    public Page<ArticleReport> findAllByIsReviewedFalseOrderByCreatedAtDesc(Pageable pageable);
+    Page<ArticleReport> findAllByIsReviewedFalseOrderByCreatedAtDesc(Pageable pageable);
 }

@@ -3,7 +3,6 @@ package com.positivarium.api.mapping;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
-import com.positivarium.api.entity.Category;
 import com.positivarium.api.entity.JournalEntry;
 import com.positivarium.api.entity.Mood;
 import com.positivarium.api.entity.User;
@@ -11,11 +10,8 @@ import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
