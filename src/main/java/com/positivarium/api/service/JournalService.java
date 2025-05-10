@@ -40,9 +40,8 @@ public class JournalService {
         // check if one was already created today
         Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
         lastJournalEntry.ifPresent(entry -> {
-            if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now())) {
+            if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
                 throw new RuntimeException("An entry was already created today");
-            }
         });
 
         JournalEntry journalEntry = journalEntryMapping.dtoToEntity(journalEntryDTO, user);
@@ -90,7 +89,6 @@ public class JournalService {
         Iterable<Mood> moods = moodRepository.findAll();
 
         List<MoodDTO> moodDTOs = new ArrayList<>();
-
         for (Mood mood : moods) {
             moodDTOs.add(moodMapping.entityToDto(mood));
         }

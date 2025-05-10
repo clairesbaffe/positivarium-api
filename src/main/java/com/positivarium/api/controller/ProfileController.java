@@ -39,11 +39,7 @@ public class ProfileController {
             @RequestBody PasswordUpdateDTO passwordUpdateDTO,
             Authentication authentication
     ){
-        try{
-            userService.updatePassword(passwordUpdateDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userService.updatePassword(passwordUpdateDTO, authentication);
     }
 
     @GetMapping("/publisher/{id}")

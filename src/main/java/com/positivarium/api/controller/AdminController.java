@@ -110,11 +110,7 @@ public class AdminController {
             @PathVariable Long id,
             @RequestParam PublisherRequestStatusEnum status
     ){
-        try{
-            publisherRequestService.updatePublisherRequestStatus(id, status);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        publisherRequestService.updatePublisherRequestStatus(id, status);
     }
 
 }

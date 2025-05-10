@@ -4,6 +4,7 @@ import com.positivarium.api.dto.PublisherRequestDTO;
 import com.positivarium.api.entity.PublisherRequest;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.enums.PublisherRequestStatusEnum;
+import com.positivarium.api.exception.InvalidStatusTransitionException;
 import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.PublisherRequestMapping;
 import com.positivarium.api.repository.PublisherRequestRepository;
@@ -72,18 +73,18 @@ public class PublisherRequestService {
         publisherRequestRepository.save(publisherRequest);
     }
 
-    public void updatePublisherRequestStatus(Long id, PublisherRequestStatusEnum status) throws Exception {
+    public void updatePublisherRequestStatus(Long id, PublisherRequestStatusEnum status){
         if(status == PublisherRequestStatusEnum.PENDING)
-            throw new Exception("Publisher request cannot be set to pending");
+            throw new InvalidStatusTransitionException("Publisher request cannot be set to pending");
         if(status == PublisherRequestStatusEnum.CANCELLED)
-            throw new Exception("Only user can cancel publisher request");
+            throw new InvalidStatusTransitionException("Only user can cancel publisher request");
 
         PublisherRequest publisherRequest = publisherRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publisher request not found"));
         if(publisherRequest.getStatus() == PublisherRequestStatusEnum.APPROVED ||
                 publisherRequest.getStatus() == PublisherRequestStatusEnum.REJECTED ||
                 publisherRequest.getStatus() == PublisherRequestStatusEnum.CANCELLED)
-            throw new Exception("Definitive status cannot be changed");
+            throw new InvalidStatusTransitionException("Definitive status cannot be changed");
 
         publisherRequest.setStatus(status);
         publisherRequestRepository.save(publisherRequest);

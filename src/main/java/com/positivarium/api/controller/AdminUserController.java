@@ -36,41 +36,25 @@ public class AdminUserController {
     @PreAuthorize("!hasRole('BAN')")
     @PatchMapping("/ban/{username}")
     public void banUser(@PathVariable String username){
-        try{
-            userService.ban(username);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        userService.ban(username);
     }
 
     @PreAuthorize("!hasRole('BAN')")
     @PatchMapping("/unban/{username}")
     public void unbanUser(@PathVariable String username){
-        try{
-            userService.unban(username);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        userService.unban(username);
     }
 
     @PreAuthorize("!hasRole('BAN')")
     @PutMapping("/publisher/{username}")
     public void grantPublisher(@PathVariable String username){
-        try{
-            userService.grantPublisher(username);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        userService.grantPublisher(username);
     }
 
     @PreAuthorize("!hasRole('BAN')")
     @PutMapping("/admin/{username}")
     public void grantAdmin(@PathVariable String username){
-        try{
-            userService.grantAdmin(username);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        userService.grantAdmin(username);
     }
 
 }
