@@ -4,6 +4,7 @@ import com.positivarium.api.dto.GlobalPreferenceDTO;
 import com.positivarium.api.dto.GlobalPreferenceRequestDTO;
 import com.positivarium.api.entity.GlobalNewsPreference;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.GlobalPreferenceMapping;
 import com.positivarium.api.repository.GlobalPreferenceRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,21 +41,21 @@ public class GlobalPreferencesService {
             Long id,
             GlobalPreferenceRequestDTO globalPreferenceRequestDTO,
             Authentication authentication
-    ) throws Exception {
+    ){
         User user = userService.getCurrentUser(authentication);
 
         GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new Exception("Global preference not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Global preference not found"));
 
         globalPreferenceMapping.updateEntityFromDto(globalNewsPreference, globalPreferenceRequestDTO);
         globalPreferenceRepository.save(globalNewsPreference);
     }
 
-    public void deleteGlobalPreference(Long id, Authentication authentication) throws Exception {
+    public void deleteGlobalPreference(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         GlobalNewsPreference globalNewsPreference = globalPreferenceRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new Exception("Global preference not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Global preference not found"));
 
         globalPreferenceRepository.delete(globalNewsPreference);
     }

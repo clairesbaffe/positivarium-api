@@ -44,11 +44,7 @@ public class JournalController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            return journalService.getEntryById(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return journalService.getEntryById(id, authentication);
     }
 
     @PatchMapping("/{id}")
@@ -57,11 +53,7 @@ public class JournalController {
             @RequestBody JournalEntryRequestDTO journalEntryDTO,
             Authentication authentication
     ){
-        try{
-            journalService.updateEntry(id, journalEntryDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalService.updateEntry(id, journalEntryDTO, authentication);
     }
 
     @DeleteMapping("/{id}")
@@ -69,11 +61,7 @@ public class JournalController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            journalService.deleteEntry(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalService.deleteEntry(id, authentication);
     }
 
     @GetMapping("/moods")

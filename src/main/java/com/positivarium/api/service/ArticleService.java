@@ -4,6 +4,7 @@ import com.positivarium.api.dto.ArticleDTO;
 import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.entity.Article;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.ArticleMapping;
 import com.positivarium.api.mapping.SimpleArticleMapping;
 import com.positivarium.api.repository.ArticleRepository;
@@ -35,8 +36,7 @@ public class ArticleService {
         });
     }
 
-    public Page<SimpleArticleDTO> getPublishedArticlesByUser(int pageNumber, int pageSize, String username) throws Exception {
-        if (username == null) throw new Exception("Username not provided");
+    public Page<SimpleArticleDTO> getPublishedArticlesByUser(int pageNumber, int pageSize, String username){
         User user = userService.getUser(username);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
@@ -75,7 +75,7 @@ public class ArticleService {
         });
     }
 
-    public ArticleDTO getArticleById(Long id, Authentication authentication) throws Exception {
+    public ArticleDTO getArticleById(Long id, Authentication authentication) {
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
 
         // Not calling getCurrentUser because user does not need to be authenticated
@@ -84,27 +84,27 @@ public class ArticleService {
                 : false;
 
         Article article = articleRepository.findByIdAndIsPublishedTrue(id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         Long likesCount = articleRepository.countLikesByArticleId(id);
         return articleMapping.entityToDtoWithLikes(article, likesCount, liked);
     }
 
-    public ArticleDTO getDraftByIdAndByUser(Long id, Authentication authentication) throws Exception {
+    public ArticleDTO getDraftByIdAndByUser(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         Article article = articleRepository.findByIdAndUserIdAndIsPublishedFalse(id, user.getId())
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         return articleMapping.entityToDto(article);
     }
 
-    public Article findArticleById(Long id) throws Exception {
+    public Article findArticleById(Long id){
         return articleRepository.findById(id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
     }
 
-    public Article findPublishedArticleById(Long id) throws Exception {
+    public Article findPublishedArticleById(Long id){
         return articleRepository.findByIdAndIsPublishedTrue(id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
     }
 
     public ArticleDTO createArticle(ArticleDTO articleDTO, Authentication authentication) {
@@ -119,55 +119,55 @@ public class ArticleService {
         return articleMapping.entityToDto(savedArticle);
     }
 
-    public void publishArticle(Long id, Authentication authentication) throws Exception {
+    public void publishArticle(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         Article article = articleRepository.findByUserIdAndId(user.getId(), id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         article.setPublished(true);
 
         articleRepository.save(article);
     }
 
-    public void updateArticle(Long id, ArticleDTO articleDTO, Authentication authentication) throws Exception {
+    public void updateArticle(Long id, ArticleDTO articleDTO, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         Article article = articleRepository.findByUserIdAndId(user.getId(), id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
         articleMapping.updateEntityFromDto(articleDTO, article);
         articleRepository.save(article);
     }
 
-    public void updateDraft(Long id, ArticleDTO articleDTO, Authentication authentication) throws Exception {
+    public void updateDraft(Long id, ArticleDTO articleDTO, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
         Article article = articleRepository.findByUserIdAndIdAndIsPublishedFalse(user.getId(), id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
         articleMapping.updateEntityFromDto(articleDTO, article);
         articleRepository.save(article);
     }
 
-    public void deletePublishedArticle(Long id) throws Exception {
+    public void deletePublishedArticle(Long id){
         // ONLY FOR ADMINS
         Article article = articleRepository.findByIdAndIsPublishedTrue(id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(article);
     }
 
-    public void deleteArticle(Long id, Authentication authentication) throws Exception {
+    public void deleteArticle(Long id, Authentication authentication){
         // ONLY FOR NOT BANNED PUBLISHERS
         User user = userService.getCurrentUser(authentication);
         Article article = articleRepository.findByUserIdAndId(user.getId(), id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(article);
     }
 
-    public void deleteDraft(Long id, Authentication authentication) throws Exception {
+    public void deleteDraft(Long id, Authentication authentication){
         // ONLY FOR PUBLISHERS
         User user = userService.getCurrentUser(authentication);
         Article article = articleRepository.findByUserIdAndIdAndIsPublishedFalse(user.getId(), id)
-                .orElseThrow(() -> new Exception("Article not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(article);
     }
 }

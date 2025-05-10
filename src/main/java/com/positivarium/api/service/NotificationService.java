@@ -3,6 +3,7 @@ package com.positivarium.api.service;
 import com.positivarium.api.dto.NotificationDTO;
 import com.positivarium.api.entity.Notification;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.NotificationMapping;
 import com.positivarium.api.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,11 +63,11 @@ public class NotificationService {
         return notifications.map(notificationMapping::entityToDto);
     }
 
-    public void markNotificationAsRead(Long id, Authentication authentication) throws Exception {
+    public void markNotificationAsRead(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         Notification notification = notificationRepository.findByIdAndReceiverIdAndIsReadFalse(id, user.getId())
-                .orElseThrow(() -> new Exception("Notification not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
     }

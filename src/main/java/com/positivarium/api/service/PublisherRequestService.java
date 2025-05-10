@@ -4,6 +4,7 @@ import com.positivarium.api.dto.PublisherRequestDTO;
 import com.positivarium.api.entity.PublisherRequest;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.enums.PublisherRequestStatusEnum;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.PublisherRequestMapping;
 import com.positivarium.api.repository.PublisherRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,9 @@ public class PublisherRequestService {
         return publisherRequests.map(publisherRequestMapping::entityToDto);
     }
 
-    public PublisherRequestDTO getById(Long id) throws Exception {
+    public PublisherRequestDTO getById(Long id){
         PublisherRequest publisherRequest = publisherRequestRepository.findById(id)
-                .orElseThrow(() -> new Exception("Publisher request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher request not found"));
         return publisherRequestMapping.entityToDto(publisherRequest);
     }
 
@@ -61,11 +62,11 @@ public class PublisherRequestService {
         return publisherRequests.map(publisherRequestMapping::entityToDto);
     }
 
-    public void cancelPublisherRequest(Long id, Authentication authentication) throws Exception {
+    public void cancelPublisherRequest(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         PublisherRequest publisherRequest = publisherRequestRepository.findByUserIdAndId(user.getId(), id)
-                .orElseThrow(() -> new Exception("Publisher request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher request not found"));
 
         publisherRequest.setStatus(PublisherRequestStatusEnum.CANCELLED);
         publisherRequestRepository.save(publisherRequest);
@@ -78,7 +79,7 @@ public class PublisherRequestService {
             throw new Exception("Only user can cancel publisher request");
 
         PublisherRequest publisherRequest = publisherRequestRepository.findById(id)
-                .orElseThrow(() -> new Exception("Publisher request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher request not found"));
         if(publisherRequest.getStatus() == PublisherRequestStatusEnum.APPROVED ||
                 publisherRequest.getStatus() == PublisherRequestStatusEnum.REJECTED ||
                 publisherRequest.getStatus() == PublisherRequestStatusEnum.CANCELLED)

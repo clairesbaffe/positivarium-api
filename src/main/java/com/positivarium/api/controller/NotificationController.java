@@ -55,10 +55,6 @@ public class NotificationController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            notificationService.markNotificationAsRead(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        notificationService.markNotificationAsRead(id, authentication);
     }
 }

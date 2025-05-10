@@ -7,6 +7,7 @@ import com.positivarium.api.dto.UserRequestDTO;
 import com.positivarium.api.dto.UserWithRolesDTO;
 import com.positivarium.api.entity.Role;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.UserMapping;
 import com.positivarium.api.mapping.UserWithRolesMapping;
 import com.positivarium.api.repository.RoleRepository;
@@ -65,16 +66,16 @@ public class UserService {
         return getUserById(user.getId());
     }
 
-    public UserDTO getPublisherById(Long id) throws Exception {
+    public UserDTO getPublisherById(Long id){
         User user = userRepository.findByIdAndRolesNameContaining(id, "ROLE_PUBLISHER")
-                .orElseThrow(() -> new Exception("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return userMapping.entityToDto(user);
     }
 
     public User registerNewUserAccount(User user) {
         // set default role
         Role defaultRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         List<Role> rolesList = new ArrayList<>(Collections.singleton(defaultRole));
         user.setRoles(rolesList);
 
@@ -142,7 +143,7 @@ public class UserService {
 
         List<Role> roles = roleNames.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                        .orElseThrow(() -> new ResourceNotFoundException("Role not found")))
                 .collect(Collectors.toList());
 
         user.setRoles(roles);

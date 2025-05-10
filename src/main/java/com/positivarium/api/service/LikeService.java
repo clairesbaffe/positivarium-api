@@ -26,33 +26,25 @@ public class LikeService {
     public void like(Long articleId, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
-        try{
-            Article article = articleService.findArticleById(articleId);
+        Article article = articleService.findArticleById(articleId);
 
-            user.getLikedArticles().add(article);
-            article.getUsersWhoLiked().add(user);
+        user.getLikedArticles().add(article);
+        article.getUsersWhoLiked().add(user);
 
-            userRepository.save(user);
-            articleRepository.save(article);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userRepository.save(user);
+        articleRepository.save(article);
     }
 
     public void unlike(Long articleId, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
-        try{
-            Article article = articleService.findArticleById(articleId);
+        Article article = articleService.findArticleById(articleId);
 
-            user.getLikedArticles().remove(article);
-            article.getUsersWhoLiked().remove(user);
+        user.getLikedArticles().remove(article);
+        article.getUsersWhoLiked().remove(user);
 
-            userRepository.save(user);
-            articleRepository.save(article);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userRepository.save(user);
+        articleRepository.save(article);
     }
 
     public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication){

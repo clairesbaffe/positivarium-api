@@ -33,11 +33,7 @@ public class ArticleController {
         Authentication authentication
     ){
         // only returns article, for comments use getCommentsByArticleId
-        try{
-            return articleService.getArticleById(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return articleService.getArticleById(id, authentication);
     }
 
     // this route works for everyone (even not connected),
@@ -52,11 +48,7 @@ public class ArticleController {
     ){
         // manage depending on user role and journal status
         // potentially use credentials to get user roles, but credentials must not be mandatory
-        try{
-            return articleService.getPublishedArticlesByUser(page, size, username);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return articleService.getPublishedArticlesByUser(page, size, username);
     }
 
     @GetMapping("/categories")

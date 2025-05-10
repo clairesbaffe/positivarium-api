@@ -33,11 +33,7 @@ public class UserController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            publisherRequestService.cancelPublisherRequest(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        publisherRequestService.cancelPublisherRequest(id, authentication);
     }
 
     @GetMapping("/publisher_request")

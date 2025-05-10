@@ -6,6 +6,7 @@ import com.positivarium.api.dto.MoodDTO;
 import com.positivarium.api.entity.JournalEntry;
 import com.positivarium.api.entity.Mood;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.JournalEntryMapping;
 import com.positivarium.api.mapping.MoodMapping;
 import com.positivarium.api.repository.JournalEntryRepository;
@@ -58,30 +59,30 @@ public class JournalService {
         return journalEntries.map(journalEntryMapping::entityToDto);
     }
 
-    public JournalEntryDTO getEntryById(Long id, Authentication authentication) throws Exception {
+    public JournalEntryDTO getEntryById(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new Exception("Entry not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
         return journalEntryMapping.entityToDto(journalEntry);
     }
 
-    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
+    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new Exception("Entry not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
         journalEntryMapping.updateEntityFromDto(journalEntryDTO, journalEntry);
         journalEntryRepository.save(journalEntry);
 
         dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, true);
     }
 
-    public void deleteEntry(Long id, Authentication authentication) throws Exception {
+    public void deleteEntry(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new Exception("Entry not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
         journalEntryRepository.delete(journalEntry);
     }
 

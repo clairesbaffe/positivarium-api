@@ -38,11 +38,7 @@ public class GlobalPreferencesController {
             @RequestBody GlobalPreferenceRequestDTO globalPreferenceRequestDTO,
             Authentication authentication
     ){
-        try{
-            globalPreferencesService.updateGlobalPreference(id, globalPreferenceRequestDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        globalPreferencesService.updateGlobalPreference(id, globalPreferenceRequestDTO, authentication);
     }
 
     @DeleteMapping("/{id}")
@@ -50,10 +46,6 @@ public class GlobalPreferencesController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            globalPreferencesService.deleteGlobalPreference(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        globalPreferencesService.deleteGlobalPreference(id, authentication);
     }
 }

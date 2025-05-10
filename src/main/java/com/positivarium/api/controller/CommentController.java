@@ -28,11 +28,7 @@ public class CommentController {
     public CommentWithArticleDTO getCommentWithArticle(
             @PathVariable Long id
     ){
-        try{
-            return commentService.getCommentWithArticle(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return commentService.getCommentWithArticle(id);
     }
 
     @PreAuthorize("!hasRole('BAN')")
@@ -73,11 +69,7 @@ public class CommentController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            commentService.deleteOwnComment(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        commentService.deleteOwnComment(id, authentication);
     }
 
 }

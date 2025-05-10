@@ -48,10 +48,6 @@ public class ProfileController {
 
     @GetMapping("/publisher/{id}")
     public UserDTO getPublisherProfile(@PathVariable Long id){
-        try{
-            return userService.getPublisherById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return userService.getPublisherById(id);
     }
 }
