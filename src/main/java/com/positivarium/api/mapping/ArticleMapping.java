@@ -18,10 +18,13 @@ public class ArticleMapping {
         return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
+                .description(article.getDescription())
                 .content(article.getContent())
                 .mainImage(article.getMainImage())
                 .username(article.getUser().getUsername())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
                 .isPublished(article.isPublished())
                 .publishedAt(article.getPublishedAt())
                 .build();
@@ -34,6 +37,7 @@ public class ArticleMapping {
 
         return Article.builder()
                 .title(articleDTO.title())
+                .description(articleDTO.description())
                 .content(articleDTO.content())
                 .mainImage(articleDTO.mainImage())
                 .category(category)
@@ -49,6 +53,7 @@ public class ArticleMapping {
 
         // nothing returned because article is a reference, not a copy of the object
         article.setTitle(articleDTO.title());
+        article.setDescription(articleDTO.description());
         article.setContent(articleDTO.content());
         article.setMainImage(articleDTO.mainImage());
         article.setCategory(category);
@@ -58,10 +63,13 @@ public class ArticleMapping {
         return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
+                .description(article.getDescription())
                 .content(article.getContent())
                 .mainImage(article.getMainImage())
                 .username(article.getUser().getUsername())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
                 .isPublished(article.isPublished())
                 .publishedAt(article.getPublishedAt())
                 .likesCount(likesCount != null ? likesCount : 0)

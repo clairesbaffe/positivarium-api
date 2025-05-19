@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS news_categories (
 CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
+    description VARCHAR(255),
     content TEXT NOT NULL,
     main_image VARCHAR(255) NOT NULL,
     is_published BOOLEAN NOT NULL,

@@ -15,9 +15,13 @@ public class SimpleArticleMapping {
         return SimpleArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
-                .main_image(article.getMainImage())
+                .description(article.getDescription())
+                .mainImage(article.getMainImage())
                 .username(article.getUser().getUsername())
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .publishedAt(article.getPublishedAt())
                 .build();
     }
 
@@ -25,9 +29,12 @@ public class SimpleArticleMapping {
         return SimpleArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
-                .main_image(article.getMainImage())
+                .description(article.getDescription())
+                .mainImage(article.getMainImage())
                 .username(article.getUser().getUsername())
-                .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
+                .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .publishedAt(article.getPublishedAt())
                 .likesCount(likesCount != null ? likesCount : 0)
                 .build();
     }
