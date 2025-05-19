@@ -36,8 +36,8 @@ public class ProfileController {
         userService.updatePassword(passwordUpdateDTO, authentication);
     }
 
-    @GetMapping("/publisher/{id}")
-    public UserDTO getPublisherProfile(@PathVariable Long id){
-        return userService.getPublisherById(id);
+    @GetMapping("/publisher/{username}")
+    public UserDTO getPublisherProfile(@PathVariable String username){
+        return userService.getPublisherById(username);
     }
 }

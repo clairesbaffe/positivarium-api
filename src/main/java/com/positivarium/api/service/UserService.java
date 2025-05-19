@@ -62,8 +62,8 @@ public class UserService {
         return getUserById(user.getId());
     }
 
-    public UserDTO getPublisherById(Long id){
-        User user = userRepository.findByIdAndRolesNameContaining(id, "ROLE_PUBLISHER")
+    public UserDTO getPublisherById(String username){
+        User user = userRepository.findByUsernameAndRolesNameContaining(username, "ROLE_PUBLISHER")
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return userMapping.entityToDto(user);
     }
