@@ -6,8 +6,7 @@ import com.positivarium.api.dto.LoginDTO;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class LoginController {
@@ -49,19 +50,14 @@ public class LoginController {
             // Create security token for user
             String token = jwtTokenProvider.generateToken(userName, roles);
 
-            ResponseCookie jwtCookie = ResponseCookie.from("access_token", token)
-                    .httpOnly(true)
-                    .secure(true)
-                    .path("/")
-                    .sameSite("Lax")
-                    .maxAge(60 * 15) // 15 mn
-                    .build();
-
-            response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
-
-            return ResponseEntity.ok(new AuthResponseDTO("JWT stored in cookie", userName));
+            AuthResponseDTO responseDTO = new AuthResponseDTO("JWT generated", token, userName);
+            return ResponseEntity.ok(responseDTO);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            Map<String, String> errorBody = new HashMap<>();
+            errorBody.put("error", "Invalid username or password");
+            errorBody.put("code", "AUTH_FAILED");
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorBody);
         }
     }
 

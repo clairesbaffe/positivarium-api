@@ -1,10 +1,7 @@
 package com.positivarium.api.service;
 
 import com.positivarium.api.config.JwtTokenProvider;
-import com.positivarium.api.dto.PasswordUpdateDTO;
-import com.positivarium.api.dto.UserDTO;
-import com.positivarium.api.dto.UserRequestDTO;
-import com.positivarium.api.dto.UserWithRolesDTO;
+import com.positivarium.api.dto.*;
 import com.positivarium.api.entity.Role;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.exception.*;
@@ -16,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -178,7 +174,7 @@ public class UserService {
         updateUserRoles(username, roles);
     }
 
-    public ResponseCookie updateProfile(UserRequestDTO userRequestDTO, Authentication authentication){
+    public AuthResponseDTO updateProfile(UserRequestDTO userRequestDTO, Authentication authentication){
         User user = getCurrentUser(authentication);
         user.setUsername(userRequestDTO.username());
         user.setEmail(userRequestDTO.email());
@@ -187,14 +183,8 @@ public class UserService {
         List<String> roles = getUserRoles(user);
 
         String token = jwtTokenProvider.generateToken(user.getUsername(), roles);
-        return ResponseCookie.from("access_token", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(60 * 15) // 15 mn
-                .build();
 
+        return new AuthResponseDTO("JWT generated", token, user.getUsername());
     }
 
     public void updatePassword(PasswordUpdateDTO passwordUpdateDTO, Authentication authentication){

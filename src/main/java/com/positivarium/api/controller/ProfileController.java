@@ -4,9 +4,6 @@ import com.positivarium.api.dto.*;
 import com.positivarium.api.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +20,12 @@ public class ProfileController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<?> updateProfile(
+    public AuthResponseDTO updateProfile(
             @RequestBody UserRequestDTO userRequestDTO,
             Authentication authentication,
             HttpServletResponse response
     ){
-        ResponseCookie jwtCookie = userService.updateProfile(userRequestDTO, authentication);
-
-        response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
-        return ResponseEntity.ok(new AuthResponseDTO("JWT stored in cookie", userRequestDTO.username()));
+        return userService.updateProfile(userRequestDTO, authentication);
     }
 
     @PatchMapping("/password")
