@@ -16,6 +16,7 @@ public class CommentWithArticleMapping {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .username(comment.getUser().getUsername())
+                .createdAt(comment.getCreatedAt())
                 .article(articleMapping.entityToDto(comment.getArticle()))
                 .build();
     }
