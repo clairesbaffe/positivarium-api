@@ -11,6 +11,7 @@ public class UserMapping {
         return UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .description(user.getDescription())
                 .build();
     }
 }

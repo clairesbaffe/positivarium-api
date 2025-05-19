@@ -178,6 +178,7 @@ public class UserService {
         User user = getCurrentUser(authentication);
         user.setUsername(userRequestDTO.username());
         user.setEmail(userRequestDTO.email());
+        user.setDescription(userRequestDTO.description());
         userRepository.save(user);
 
         List<String> roles = getUserRoles(user);

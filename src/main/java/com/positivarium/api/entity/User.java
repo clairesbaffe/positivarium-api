@@ -15,17 +15,26 @@ import java.util.Set;
 @Setter
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String username;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private boolean enabled;
+
+    @Column(name = "description")
+    private String description;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
