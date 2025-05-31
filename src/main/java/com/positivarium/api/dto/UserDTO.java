@@ -6,6 +6,7 @@ import lombok.Builder;
 public record UserDTO(
         Long id,
         String username,
-        String description
+        String description,
+        Boolean isFollowed
 ) {
 }

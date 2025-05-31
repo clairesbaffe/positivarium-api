@@ -28,9 +28,9 @@ public class AdminUserController {
         return userService.getAllUsers(page, size);
     }
 
-    @GetMapping("/{id}")
-    public UserWithRolesDTO getUserById(@PathVariable Long id){
-        return userService.getUserById(id);
+    @GetMapping("/{username}")
+    public UserWithRolesDTO getUserByUsername(@PathVariable String username){
+        return userService.getUserByUsername(username);
     }
 
     @PreAuthorize("!hasRole('BAN')")

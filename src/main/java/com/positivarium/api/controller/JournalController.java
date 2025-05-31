@@ -1,5 +1,6 @@
 package com.positivarium.api.controller;
 
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
@@ -67,5 +68,10 @@ public class JournalController {
     @GetMapping("/moods")
     public List<MoodDTO> getAllMoods(){
         return journalService.getAllMoods();
+    }
+
+    @GetMapping("/today")
+    public JournalEntryDTO hasMadeEntryToday(Authentication authentication){
+        return journalService.todaysEntry(authentication);
     }
 }

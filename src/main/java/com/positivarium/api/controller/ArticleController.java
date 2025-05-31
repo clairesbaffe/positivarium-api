@@ -1,6 +1,7 @@
 package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.ArticleDTO;
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +68,10 @@ public class ArticleController {
             Authentication authentication
     ){
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
+    }
+
+    @GetMapping("/categories")
+    public List<CategoryDTO> getAllCategories(){
+        return articleService.getAllCategories();
     }
 }

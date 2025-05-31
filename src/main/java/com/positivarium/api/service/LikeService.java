@@ -23,7 +23,7 @@ public class LikeService {
     private final ArticleService articleService;
     private final SimpleArticleMapping simpleArticleMapping;
 
-    public void like(Long articleId, Authentication authentication){
+    public void like(Long articleId, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         Article article = articleService.findArticleById(articleId);
@@ -35,7 +35,7 @@ public class LikeService {
         articleRepository.save(article);
     }
 
-    public void unlike(Long articleId, Authentication authentication){
+    public void unlike(Long articleId, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         Article article = articleService.findArticleById(articleId);
@@ -47,7 +47,7 @@ public class LikeService {
         articleRepository.save(article);
     }
 
-    public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication){
+    public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 

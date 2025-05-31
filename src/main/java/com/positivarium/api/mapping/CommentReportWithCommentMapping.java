@@ -17,6 +17,7 @@ public class CommentReportWithCommentMapping {
                 .id(commentReport.getId())
                 .reason(commentReport.getReason())
                 .isReviewed(commentReport.isReviewed())
+                .createdAt(commentReport.getCreatedAt())
                 .comment(commentWithArticleMapping.entityToDto(comment))
                 .build();
     }

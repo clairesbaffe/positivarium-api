@@ -13,6 +13,7 @@ public class ArticleReportMapping {
                 .id(articleReport.getId())
                 .reason(articleReport.getReason())
                 .isReviewed(articleReport.isReviewed())
+                .createdAt(articleReport.getCreatedAt())
                 .build();
     }
 

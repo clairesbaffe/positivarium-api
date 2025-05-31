@@ -46,6 +46,10 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    public User findUserByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
     public Page<UserWithRolesDTO> getAllUsers(int pageNumber, int pageSize){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<User> users = userRepository.findAll(pageable);
@@ -57,15 +61,26 @@ public class UserService {
         return userWithRolesMapping.entityToDto(user);
     }
 
+    public UserWithRolesDTO getUserByUsername(String username){
+        System.out.println(username);
+        User user = findUserByUsername(username);
+        if(user == null) throw new ResourceNotFoundException("User not found");
+        return userWithRolesMapping.entityToDto(user);
+    }
+
     public UserWithRolesDTO getOwnProfile(Authentication authentication){
         User user = getCurrentUser(authentication);
         return getUserById(user.getId());
     }
 
-    public UserDTO getPublisherById(String username){
-        User user = userRepository.findByUsernameAndRolesNameContaining(username, "ROLE_PUBLISHER")
+    public UserDTO getPublisherByUsername(String publisherUsername, Authentication authentication){
+        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
+        User user = username == null ? null : getUser(username);
+
+        User publisher = userRepository.findByUsernameAndRolesNameContaining(publisherUsername, "ROLE_PUBLISHER")
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return userMapping.entityToDto(user);
+        Boolean isFollowed = user != null && userRepository.userFollowsPublisher(user.getId(), publisher.getId());
+        return userMapping.entityToDtoWithIsFollowed(publisher, isFollowed);
     }
 
     public User registerNewUserAccount(User user) {

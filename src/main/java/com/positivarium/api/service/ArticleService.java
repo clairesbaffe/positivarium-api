@@ -1,13 +1,17 @@
 package com.positivarium.api.service;
 
 import com.positivarium.api.dto.ArticleDTO;
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.entity.Article;
+import com.positivarium.api.entity.Category;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.ArticleMapping;
+import com.positivarium.api.mapping.CategoryMapping;
 import com.positivarium.api.mapping.SimpleArticleMapping;
 import com.positivarium.api.repository.ArticleRepository;
+import com.positivarium.api.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +30,8 @@ public class ArticleService {
     private final SimpleArticleMapping simpleArticleMapping;
     private final ArticleMapping articleMapping;
     private final UserService userService;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapping categoryMapping;
 
     public Page<SimpleArticleDTO> getArticles(int pageNumber, int pageSize){
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -169,5 +176,16 @@ public class ArticleService {
         Article article = articleRepository.findByUserIdAndIdAndIsPublishedFalse(user.getId(), id)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(article);
+    }
+
+    public List<CategoryDTO> getAllCategories(){
+        Iterable<Category> categories = categoryRepository.findAll();
+
+        List<CategoryDTO> categoryDTOs = new ArrayList<>();
+        for (Category category : categories) {
+            categoryDTOs.add(categoryMapping.entityToDto(category));
+        }
+
+        return categoryDTOs;
     }
 }

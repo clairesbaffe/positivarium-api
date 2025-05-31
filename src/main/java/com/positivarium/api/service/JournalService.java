@@ -1,14 +1,18 @@
 package com.positivarium.api.service;
 
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
+import com.positivarium.api.entity.Category;
 import com.positivarium.api.entity.JournalEntry;
 import com.positivarium.api.entity.Mood;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.exception.ResourceNotFoundException;
+import com.positivarium.api.mapping.CategoryMapping;
 import com.positivarium.api.mapping.JournalEntryMapping;
 import com.positivarium.api.mapping.MoodMapping;
+import com.positivarium.api.repository.CategoryRepository;
 import com.positivarium.api.repository.JournalEntryRepository;
 import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ public class JournalService {
     private final MoodRepository moodRepository;
     private final MoodMapping moodMapping;
     private final DailyPreferenceService dailyPreferenceService;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapping categoryMapping;
 
     public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
         User user = userService.getCurrentUser(authentication);
@@ -94,5 +100,16 @@ public class JournalService {
         }
 
         return moodDTOs;
+    }
+
+    public JournalEntryDTO todaysEntry(Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
+
+        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
+
+        return lastJournalEntry
+                .filter(entry -> entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
+                .map(journalEntryMapping::entityToDto)
+                .orElse(null);
     }
 }

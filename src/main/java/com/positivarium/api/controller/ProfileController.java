@@ -37,7 +37,10 @@ public class ProfileController {
     }
 
     @GetMapping("/publisher/{username}")
-    public UserDTO getPublisherProfile(@PathVariable String username){
-        return userService.getPublisherById(username);
+    public UserDTO getPublisherProfile(
+            @PathVariable String username,
+            Authentication authentication
+    ){
+        return userService.getPublisherByUsername(username, authentication);
     }
 }
