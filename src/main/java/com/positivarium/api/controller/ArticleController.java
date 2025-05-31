@@ -70,7 +70,7 @@ public class ArticleController {
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/categories/all")
     public List<CategoryDTO> getAllCategories(){
         return articleService.getAllCategories();
     }
