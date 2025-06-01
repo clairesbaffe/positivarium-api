@@ -22,9 +22,7 @@ public class CloudinaryImageController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            System.out.println("Uploading image");
             String imageUrl = cloudinaryImageUploadService.uploadImage(file);
-            System.out.println("Uploaded : " + imageUrl);
             return ResponseEntity.ok(imageUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
