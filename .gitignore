@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 *.properties
+!**src/main/resources/application.properties
 .env
 
 ### STS ###
