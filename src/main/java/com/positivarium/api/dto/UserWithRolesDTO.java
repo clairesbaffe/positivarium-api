@@ -9,6 +9,7 @@ public record UserWithRolesDTO(
         Long id,
         String username,
         String email,
+        String description,
         Set<String> roles
 ){
 }

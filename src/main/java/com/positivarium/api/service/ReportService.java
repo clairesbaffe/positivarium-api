@@ -8,6 +8,7 @@ import com.positivarium.api.entity.Article;
 import com.positivarium.api.entity.ArticleReport;
 import com.positivarium.api.entity.Comment;
 import com.positivarium.api.entity.CommentReport;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.ArticleReportMapping;
 import com.positivarium.api.mapping.ArticleReportWithArticleMapping;
 import com.positivarium.api.mapping.CommentReportMapping;
@@ -34,28 +35,20 @@ public class ReportService {
     private final CommentReportWithCommentMapping commentReportWithCommentMapping;
 
     public void createArticleReport(Long articleId, ArticleReportDTO articleReportDTO){
-        try {
-            Article article = articleService.findArticleById(articleId);
-            ArticleReport articleReport = articleReportMapping.dtoToEntityWithArticle(articleReportDTO, article);
-            articleReportRepository.save(articleReport);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Article article = articleService.findArticleById(articleId);
+        ArticleReport articleReport = articleReportMapping.dtoToEntityWithArticle(articleReportDTO, article);
+        articleReportRepository.save(articleReport);
     }
 
     public void createCommentReport(Long commentId, CommentReportDTO commentReportDTO){
-        try {
-            Comment comment = commentService.findCommentById(commentId);
-            CommentReport commentReport = commentReportMapping.dtoToEntityWithComment(commentReportDTO, comment);
-            commentReportRepository.save(commentReport);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Comment comment = commentService.findCommentById(commentId);
+        CommentReport commentReport = commentReportMapping.dtoToEntityWithComment(commentReportDTO, comment);
+        commentReportRepository.save(commentReport);
     }
 
-    public void markArticleReportAsRead(Long id) throws Exception {
+    public void markArticleReportAsRead(Long id){
         ArticleReport articleReport = articleReportRepository.findById(id)
-                .orElseThrow(() -> new Exception("Article report not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article report not found"));
         articleReport.setReviewed(true);
         articleReportRepository.save(articleReport);
     }
@@ -64,26 +57,22 @@ public class ReportService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<ArticleReport> articleReports = articleReportRepository.findAllByIsReviewedFalseOrderByCreatedAtDesc(pageable);
         return articleReports.map(articleReport -> {
-            try{
-                Article article = articleService.findArticleById(articleReport.getArticle().getId());
-                return articleReportWithArticleMapping.entityToDto(articleReport, article);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            Article article = articleService.findArticleById(articleReport.getArticle().getId());
+            return articleReportWithArticleMapping.entityToDto(articleReport, article);
         });
     }
 
-    public ArticleReportWithArticleDTO getArticleReportById(Long id) throws Exception {
+    public ArticleReportWithArticleDTO getArticleReportById(Long id){
         ArticleReport articleReport = articleReportRepository.findById(id)
-                .orElseThrow(() -> new Exception("Article report not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Article report not found"));
         Article article = articleService.findArticleById(articleReport.getArticle().getId());
         return articleReportWithArticleMapping.entityToDto(articleReport, article);
     }
 
 
-    public void markCommentReportAsRead(Long id) throws Exception {
+    public void markCommentReportAsRead(Long id){
         CommentReport commentReport = commentReportRepository.findById(id)
-                .orElseThrow(() -> new Exception("Comment report not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment report not found"));
         commentReport.setReviewed(true);
         commentReportRepository.save(commentReport);
     }
@@ -92,18 +81,14 @@ public class ReportService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<CommentReport> commentReports = commentReportRepository.findAllByIsReviewedFalseOrderByCreatedAtDesc(pageable);
         return commentReports.map(commentReport -> {
-            try {
-                Comment comment = commentService.findCommentById(commentReport.getComment().getId());
-                return commentReportWithCommentMapping.entityToDto(commentReport, comment);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            Comment comment = commentService.findCommentById(commentReport.getComment().getId());
+            return commentReportWithCommentMapping.entityToDto(commentReport, comment);
         });
     }
 
-    public CommentReportWithCommentDTO getCommentReportById(Long id) throws Exception {
+    public CommentReportWithCommentDTO getCommentReportById(Long id){
         CommentReport commentReport = commentReportRepository.findById(id)
-                .orElseThrow(() -> new Exception("Comment report not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment report not found"));
         Comment comment = commentService.findCommentById(commentReport.getComment().getId());
         return commentReportWithCommentMapping.entityToDto(commentReport, comment);
     }

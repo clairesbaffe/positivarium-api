@@ -39,11 +39,7 @@ public class PublisherController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            return articleService.getDraftByIdAndByUser(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return articleService.getDraftByIdAndByUser(id, authentication);
     }
 
     @PostMapping("/articles/")
@@ -57,11 +53,7 @@ public class PublisherController {
     @PreAuthorize("!hasRole('BAN')")
     @PostMapping("/articles/publish/{id}")
     public void publishArticle(@PathVariable Long id, Authentication authentication){
-        try{
-            articleService.publishArticle(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.publishArticle(id, authentication);
     }
 
     @PreAuthorize("!hasRole('BAN')")
@@ -71,11 +63,7 @@ public class PublisherController {
             @RequestBody ArticleDTO articleDTO,
             Authentication authentication
     ){
-        try{
-            articleService.updateArticle(id, articleDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.updateArticle(id, articleDTO, authentication);
     }
 
     @PutMapping("/articles/drafts/{id}")
@@ -84,11 +72,7 @@ public class PublisherController {
             @RequestBody ArticleDTO articleDTO,
             Authentication authentication
     ){
-        try{
-            articleService.updateDraft(id, articleDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.updateDraft(id, articleDTO, authentication);
     }
 
     @PreAuthorize("!hasRole('BAN')")
@@ -97,11 +81,7 @@ public class PublisherController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            articleService.deleteArticle(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.deleteArticle(id, authentication);
     }
 
     @DeleteMapping("/articles/drafts/{id}")
@@ -109,11 +89,7 @@ public class PublisherController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            articleService.deleteDraft(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.deleteDraft(id, authentication);
     }
 
 }

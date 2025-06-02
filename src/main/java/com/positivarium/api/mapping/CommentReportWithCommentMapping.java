@@ -1,9 +1,6 @@
 package com.positivarium.api.mapping;
 
-import com.positivarium.api.dto.ArticleReportWithArticleDTO;
 import com.positivarium.api.dto.CommentReportWithCommentDTO;
-import com.positivarium.api.entity.Article;
-import com.positivarium.api.entity.ArticleReport;
 import com.positivarium.api.entity.Comment;
 import com.positivarium.api.entity.CommentReport;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +17,7 @@ public class CommentReportWithCommentMapping {
                 .id(commentReport.getId())
                 .reason(commentReport.getReason())
                 .isReviewed(commentReport.isReviewed())
+                .createdAt(commentReport.getCreatedAt())
                 .comment(commentWithArticleMapping.entityToDto(comment))
                 .build();
     }

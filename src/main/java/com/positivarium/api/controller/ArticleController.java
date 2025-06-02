@@ -1,6 +1,7 @@
 package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.ArticleDTO;
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,7 @@ public class ArticleController {
         Authentication authentication
     ){
         // only returns article, for comments use getCommentsByArticleId
-        try{
-            return articleService.getArticleById(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return articleService.getArticleById(id, authentication);
     }
 
     // this route works for everyone (even not connected),
@@ -71,5 +68,10 @@ public class ArticleController {
             Authentication authentication
     ){
         return articleService.getPublishedFollowedPublishersArticles(page, size, authentication);
+    }
+
+    @GetMapping("/categories/all")
+    public List<CategoryDTO> getAllCategories(){
+        return articleService.getAllCategories();
     }
 }

@@ -4,6 +4,7 @@ import com.positivarium.api.dto.CommentDTO;
 import com.positivarium.api.dto.CommentWithArticleDTO;
 import com.positivarium.api.entity.Comment;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.CommentMapping;
 import com.positivarium.api.mapping.CommentWithArticleMapping;
 import com.positivarium.api.repository.CommentRepository;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,29 +31,25 @@ public class CommentService {
         return comments.map(commentWithArticleMapping::entityToDto);
     }
 
-    public CommentWithArticleDTO getCommentWithArticle(Long id) throws Exception {
+    public CommentWithArticleDTO getCommentWithArticle(Long id){
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new Exception("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         return commentWithArticleMapping.entityToDto(comment);
     }
 
-    public Comment findCommentById(Long id) throws Exception {
+    public Comment findCommentById(Long id){
         return commentRepository.findById(id)
-                .orElseThrow(() -> new Exception("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
     }
 
-    public void createComment(CommentDTO commentDTO, Long articleId, Authentication authentication) throws Exception{
+    public void createComment(CommentDTO commentDTO, Long articleId, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
-        try {
-            Comment comment = commentMapping.dtoToEntity(commentDTO);
-            comment.setUser(user);
-            comment.setArticle(articleService.findPublishedArticleById(articleId));
+        Comment comment = commentMapping.dtoToEntity(commentDTO);
+        comment.setUser(user);
+        comment.setArticle(articleService.findPublishedArticleById(articleId));
 
-            commentRepository.save(comment);
-        } catch (Exception e) {
-            throw new Exception("Unable to create comment because article was not found", e);
-        }
+        commentRepository.save(comment);
     }
 
     public Page<CommentDTO> getArticleComments(int pageNumber, int pageSize, Long articleId){
@@ -69,17 +64,17 @@ public class CommentService {
         return comments.map(commentWithArticleMapping::entityToDto);
     }
 
-    public void deleteAnyComment(Long id) throws Exception {
+    public void deleteAnyComment(Long id){
         // ONLY FOR ADMIN
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new Exception("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         commentRepository.delete(comment);
     }
 
-    public void deleteOwnComment(Long id, Authentication authentication) throws Exception {
+    public void deleteOwnComment(Long id, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
         Comment comment = commentRepository.findByUserIdAndId(user.getId(), id)
-                .orElseThrow(() -> new Exception("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         commentRepository.delete(comment);
     }
 }

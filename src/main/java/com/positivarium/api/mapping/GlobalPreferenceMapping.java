@@ -3,7 +3,6 @@ package com.positivarium.api.mapping;
 import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.GlobalPreferenceDTO;
 import com.positivarium.api.dto.GlobalPreferenceRequestDTO;
-import com.positivarium.api.dto.MoodDTO;
 import com.positivarium.api.entity.Category;
 import com.positivarium.api.entity.GlobalNewsPreference;
 import com.positivarium.api.entity.Mood;
@@ -13,7 +12,6 @@ import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

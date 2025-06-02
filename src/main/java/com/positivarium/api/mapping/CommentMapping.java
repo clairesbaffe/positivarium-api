@@ -12,6 +12,7 @@ public class CommentMapping {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .username(comment.getUser().getUsername())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 

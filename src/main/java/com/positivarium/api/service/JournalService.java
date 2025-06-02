@@ -1,13 +1,15 @@
 package com.positivarium.api.service;
 
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
-import com.positivarium.api.entity.JournalEntry;
-import com.positivarium.api.entity.Mood;
-import com.positivarium.api.entity.User;
+import com.positivarium.api.entity.*;
+import com.positivarium.api.exception.ResourceNotFoundException;
+import com.positivarium.api.mapping.CategoryMapping;
 import com.positivarium.api.mapping.JournalEntryMapping;
 import com.positivarium.api.mapping.MoodMapping;
+import com.positivarium.api.repository.CategoryRepository;
 import com.positivarium.api.repository.JournalEntryRepository;
 import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,20 +36,17 @@ public class JournalService {
     private final MoodRepository moodRepository;
     private final MoodMapping moodMapping;
     private final DailyPreferenceService dailyPreferenceService;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapping categoryMapping;
 
     public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
+        User user = userService.getCurrentUser(authentication);
 
         // check if one was already created today
-        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
+        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
         lastJournalEntry.ifPresent(entry -> {
-            if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now())) {
+            if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
                 throw new RuntimeException("An entry was already created today");
-            }
         });
 
         JournalEntry journalEntry = journalEntryMapping.dtoToEntity(journalEntryDTO, user);
@@ -54,66 +55,71 @@ public class JournalService {
         dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, false);
     }
 
-    public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+    public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
-        return journalEntries.map(journalEntryMapping::entityToDto);
+
+        Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
+    
+        return journalEntries.map(journalEntry -> {
+            List<DailyNewsPreference> dailyNewsPreferences = dailyPreferenceService.getDailyPreferenceByJournalEntryId(journalEntry.getId());
+            Set<Category> categories = dailyNewsPreferences.stream()
+                    .flatMap(pref -> pref.getCategories().stream())
+                    .collect(Collectors.toSet());
+            return journalEntryMapping.entityToDtoWithCategories(journalEntry, categories);
+        });
     }
 
-    public JournalEntryDTO getEntryById(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
+    public JournalEntryDTO getEntryById(Long id, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new Exception("Entry not found"));
-        return journalEntryMapping.entityToDto(journalEntry);
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
+        List<DailyNewsPreference> dailyNewsPreferences = dailyPreferenceService.getDailyPreferenceByJournalEntryId(id);
+        Set<Category> categories = dailyNewsPreferences.stream()
+                .flatMap(dailyNewsPreference -> dailyNewsPreference.getCategories().stream())
+                .collect(Collectors.toSet());
+        return journalEntryMapping.entityToDtoWithCategories(journalEntry, categories);
     }
 
-    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new Exception("Entry not found"));
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
         journalEntryMapping.updateEntityFromDto(journalEntryDTO, journalEntry);
         journalEntryRepository.save(journalEntry);
 
         dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, true);
     }
 
-    public void deleteEntry(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void deleteEntry(Long id, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        journalEntryRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new Exception("Entry not found"));
-        journalEntryRepository.deleteByIdAndUserId(id, userId);
+        JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
+        journalEntryRepository.delete(journalEntry);
     }
 
-    public List<MoodDTO> getAllMoods(){
+    public List<MoodDTO> getAllMoods() {
         Iterable<Mood> moods = moodRepository.findAll();
 
         List<MoodDTO> moodDTOs = new ArrayList<>();
-
         for (Mood mood : moods) {
             moodDTOs.add(moodMapping.entityToDto(mood));
         }
 
         return moodDTOs;
+    }
+
+    public JournalEntryDTO todaysEntry(Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
+
+        Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
+
+        return lastJournalEntry
+                .filter(entry -> entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
+                .map(journalEntryMapping::entityToDto)
+                .orElse(null);
     }
 }

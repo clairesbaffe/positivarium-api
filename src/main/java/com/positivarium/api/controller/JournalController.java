@@ -1,5 +1,6 @@
 package com.positivarium.api.controller;
 
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
@@ -44,11 +45,7 @@ public class JournalController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            return journalService.getEntryById(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return journalService.getEntryById(id, authentication);
     }
 
     @PatchMapping("/{id}")
@@ -57,11 +54,7 @@ public class JournalController {
             @RequestBody JournalEntryRequestDTO journalEntryDTO,
             Authentication authentication
     ){
-        try{
-            journalService.updateEntry(id, journalEntryDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalService.updateEntry(id, journalEntryDTO, authentication);
     }
 
     @DeleteMapping("/{id}")
@@ -69,15 +62,16 @@ public class JournalController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            journalService.deleteEntry(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalService.deleteEntry(id, authentication);
     }
 
     @GetMapping("/moods")
     public List<MoodDTO> getAllMoods(){
         return journalService.getAllMoods();
+    }
+
+    @GetMapping("/today")
+    public JournalEntryDTO hasMadeEntryToday(Authentication authentication){
+        return journalService.todaysEntry(authentication);
     }
 }

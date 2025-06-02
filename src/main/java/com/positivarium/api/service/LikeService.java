@@ -13,9 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -26,57 +23,35 @@ public class LikeService {
     private final ArticleService articleService;
     private final SimpleArticleMapping simpleArticleMapping;
 
-    public void like(Long articleId, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void like(Long articleId, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        if (user == null) return;
+        Article article = articleService.findArticleById(articleId);
 
-        try{
-            Article article = articleService.findArticleById(articleId);
+        user.getLikedArticles().add(article);
+        article.getUsersWhoLiked().add(user);
 
-            user.getLikedArticles().add(article);
-            article.getUsersWhoLiked().add(user);
-
-            userRepository.save(user);
-            articleRepository.save(article);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userRepository.save(user);
+        articleRepository.save(article);
     }
 
-    public void unlike(Long articleId, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void unlike(Long articleId, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        if (user == null) return;
+        Article article = articleService.findArticleById(articleId);
 
-        try{
-            Article article = articleService.findArticleById(articleId);
+        user.getLikedArticles().remove(article);
+        article.getUsersWhoLiked().remove(user);
 
-            user.getLikedArticles().remove(article);
-            article.getUsersWhoLiked().remove(user);
-
-            userRepository.save(user);
-            articleRepository.save(article);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userRepository.save(user);
+        articleRepository.save(article);
     }
 
-    public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        if (user == null) return null;
-
-        Long userId = user.getId();
-
+    public Page<SimpleArticleDTO> getLikedArticles(int pageNumber, int pageSize, Authentication authentication) {
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Article> articles = articleRepository.findAllLikedByUser(userId, pageable);
+
+        Page<Article> articles = articleRepository.findAllLikedByUser(user.getId(), pageable);
         return articles.map(simpleArticleMapping::entityToDto);
     }
 }

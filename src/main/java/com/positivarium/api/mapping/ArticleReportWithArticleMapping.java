@@ -17,6 +17,7 @@ public class ArticleReportWithArticleMapping {
                 .id(articleReport.getId())
                 .reason(articleReport.getReason())
                 .isReviewed(articleReport.isReviewed())
+                .createdAt(articleReport.getCreatedAt())
                 .article(simpleArticleMapping.entityToDto(article))
                 .build();
     }

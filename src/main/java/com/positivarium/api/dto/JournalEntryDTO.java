@@ -10,6 +10,7 @@ public record JournalEntryDTO(
         Long id,
         String description,
         Set<MoodDTO> moods,
+        Set<CategoryDTO> categories,
         LocalDateTime createdAt
 ) {
 }

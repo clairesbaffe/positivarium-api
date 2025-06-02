@@ -24,21 +24,13 @@ public class AdminController {
     @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
     public void deletePublishedArticleById(@PathVariable Long id){
-        try{
-            articleService.deletePublishedArticle(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        articleService.deletePublishedArticle(id);
     }
 
     @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/comments/{id}")
     public void deleteCommentById(@PathVariable Long id){
-        try{
-            commentService.deleteAnyComment(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        commentService.deleteAnyComment(id);
     }
 
     @PreAuthorize("!hasRole('BAN')")
@@ -46,11 +38,7 @@ public class AdminController {
     public void markArticleReportAsRead(
             @PathVariable Long id
     ){
-        try{
-            reportService.markArticleReportAsRead(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        reportService.markArticleReportAsRead(id);
     }
 
     @GetMapping("/reports/articles/")
@@ -65,11 +53,7 @@ public class AdminController {
     public ArticleReportWithArticleDTO getArticleReportById(
             @PathVariable Long id
     ){
-        try{
-            return reportService.getArticleReportById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return reportService.getArticleReportById(id);
     }
 
 
@@ -78,11 +62,7 @@ public class AdminController {
     public void markCommentReportAsRead(
             @PathVariable Long id
     ){
-        try{
-            reportService.markCommentReportAsRead(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        reportService.markCommentReportAsRead(id);
     }
 
     @GetMapping("/reports/comments/")
@@ -97,11 +77,7 @@ public class AdminController {
     public CommentReportWithCommentDTO getCommentReportById(
             @PathVariable Long id
     ){
-        try{
-            return reportService.getCommentReportById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return reportService.getCommentReportById(id);
     }
 
 
@@ -125,11 +101,7 @@ public class AdminController {
     public PublisherRequestDTO getPublisherRequestById(
             @PathVariable Long id
     ){
-        try{
-            return publisherRequestService.getById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return publisherRequestService.getById(id);
     }
 
     @PreAuthorize("!hasRole('BAN')")
@@ -138,11 +110,7 @@ public class AdminController {
             @PathVariable Long id,
             @RequestParam PublisherRequestStatusEnum status
     ){
-        try{
-            publisherRequestService.updatePublisherRequestStatus(id, status);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        publisherRequestService.updatePublisherRequestStatus(id, status);
     }
 
 }

@@ -27,10 +27,13 @@ public class Article {
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "mainImage", nullable = false, length = 255)
+    @Column(name = "mainImage", nullable = false)
     private String mainImage;
 
     @Column(name = "is_published", nullable = false)

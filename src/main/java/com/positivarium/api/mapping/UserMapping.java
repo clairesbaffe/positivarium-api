@@ -11,6 +11,16 @@ public class UserMapping {
         return UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .description(user.getDescription())
+                .build();
+    }
+
+    public UserDTO entityToDtoWithIsFollowed(User user, Boolean isFollowed){
+        return UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .description(user.getDescription())
+                .isFollowed(isFollowed)
                 .build();
     }
 }

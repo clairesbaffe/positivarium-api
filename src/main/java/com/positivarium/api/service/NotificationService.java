@@ -3,6 +3,7 @@ package com.positivarium.api.service;
 import com.positivarium.api.dto.NotificationDTO;
 import com.positivarium.api.entity.Notification;
 import com.positivarium.api.entity.User;
+import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.NotificationMapping;
 import com.positivarium.api.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,7 @@ public class NotificationService {
             NotificationDTO notificationDTO,
             Authentication authentication
     ){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
-
-        User sender = userService.getUser(username);
+        User sender = userService.getCurrentUser(authentication);
         User receiver = userService.findUserById(userId);
 
         Notification notification = notificationMapping.dtoToEntity(notificationDTO);
@@ -42,50 +40,34 @@ public class NotificationService {
     }
 
     public Page<NotificationDTO> getSentNotifications(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Notification> notifications = notificationRepository.findAllBySenderId(userId, pageable);
+
+        Page<Notification> notifications = notificationRepository.findAllBySenderId(user.getId(), pageable);
         return notifications.map(notificationMapping::entityToDto);
     }
 
     public Page<NotificationDTO> getReceivedNotifications(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Notification> notifications = notificationRepository.findAllByReceiverId(userId, pageable);
+
+        Page<Notification> notifications = notificationRepository.findAllByReceiverId(user.getId(), pageable);
         return notifications.map(notificationMapping::entityToDto);
     }
 
     public Page<NotificationDTO> getUnreadReceivedNotifications(int pageNumber, int pageSize, Authentication authentication){
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return null;
-
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
+        User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Notification> notifications = notificationRepository.findAllByReceiverIdAndIsReadFalse(userId, pageable);
+
+        Page<Notification> notifications = notificationRepository.findAllByReceiverIdAndIsReadFalse(user.getId(), pageable);
         return notifications.map(notificationMapping::entityToDto);
     }
 
-    public void markNotificationAsRead(Long id, Authentication authentication) throws Exception {
-        String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
-        if (username == null) return;
+    public void markNotificationAsRead(Long id, Authentication authentication){
+        User user = userService.getCurrentUser(authentication);
 
-        User user = userService.getUser(username);
-        Long userId = user.getId();
-
-        Notification notification = notificationRepository.findByIdAndReceiverIdAndIsReadFalse(id, userId)
-                .orElseThrow(() -> new Exception("Notification not found"));
+        Notification notification = notificationRepository.findByIdAndReceiverIdAndIsReadFalse(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
     }

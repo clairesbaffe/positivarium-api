@@ -33,11 +33,7 @@ public class UserController {
             @PathVariable Long id,
             Authentication authentication
     ){
-        try{
-            publisherRequestService.cancelPublisherRequest(id, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        publisherRequestService.cancelPublisherRequest(id, authentication);
     }
 
     @GetMapping("/publisher_request")
@@ -56,11 +52,7 @@ public class UserController {
             @PathVariable Long publisherId,
             Authentication authentication
     ){
-        try{
-            followService.followPublisher(publisherId, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        followService.followPublisher(publisherId, authentication);
     }
 
     // Banned user can still unfollow
@@ -69,11 +61,7 @@ public class UserController {
             @PathVariable Long publisherId,
             Authentication authentication
     ){
-        try{
-            followService.unfollowPublisher(publisherId, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        followService.unfollowPublisher(publisherId, authentication);
     }
 
     @GetMapping("/follow")
