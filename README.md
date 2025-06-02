@@ -7,3 +7,5 @@ Create a `application.properties` file and specify the followings :
 - Hibernate specifications
 - Flyway specifications, locations being `classpath:db/migration`
 - CORS
+
+Environment needs to have a CLOUDINARY_URL. Please create a [Cloudinary account](https://cloudinary.com/) to get your own API keys.
