@@ -1,8 +1,10 @@
 package com.positivarium.api.mapping;
 
+import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
+import com.positivarium.api.entity.Category;
 import com.positivarium.api.entity.JournalEntry;
 import com.positivarium.api.entity.Mood;
 import com.positivarium.api.entity.User;
@@ -21,6 +23,7 @@ public class JournalEntryMapping {
 
     private final MoodMapping moodMapping;
     private final MoodRepository moodRepository;
+    private final CategoryMapping categoryMapping;
 
     public JournalEntry dtoToEntity(JournalEntryRequestDTO journalEntryDTO, User user){
         Iterable<Mood> iterableMoods = moodRepository.findAllById(journalEntryDTO.moodIds());
@@ -44,6 +47,24 @@ public class JournalEntryMapping {
                 .id(journalEntry.getId())
                 .description(journalEntry.getDescription())
                 .moods(moodDTOs)
+                .createdAt(journalEntry.getCreatedAt())
+                .build();
+    }
+
+    public JournalEntryDTO entityToDtoWithCategories(JournalEntry journalEntry, Set<Category> categories){
+        Set<CategoryDTO> categoryDTOs = new HashSet<>(categories).stream()
+                .map(categoryMapping::entityToDto)
+                .collect(Collectors.toSet());
+
+        Set<MoodDTO> moodDTOs = new HashSet<>(journalEntry.getMoods()).stream()
+                .map(moodMapping::entityToDto)
+                .collect(Collectors.toSet());
+
+        return JournalEntryDTO.builder()
+                .id(journalEntry.getId())
+                .description(journalEntry.getDescription())
+                .moods(moodDTOs)
+                .categories(categoryDTOs)
                 .createdAt(journalEntry.getCreatedAt())
                 .build();
     }

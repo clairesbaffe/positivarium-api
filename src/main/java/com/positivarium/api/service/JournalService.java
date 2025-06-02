@@ -4,10 +4,7 @@ import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
-import com.positivarium.api.entity.Category;
-import com.positivarium.api.entity.JournalEntry;
-import com.positivarium.api.entity.Mood;
-import com.positivarium.api.entity.User;
+import com.positivarium.api.entity.*;
 import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.CategoryMapping;
 import com.positivarium.api.mapping.JournalEntryMapping;
@@ -26,6 +23,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,23 +55,34 @@ public class JournalService {
         dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, false);
     }
 
-    public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication){
+    public Page<JournalEntryDTO> getAllEntries(int pageNumber, int pageSize, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
-        return journalEntries.map(journalEntryMapping::entityToDto);
+    
+        return journalEntries.map(journalEntry -> {
+            List<DailyNewsPreference> dailyNewsPreferences = dailyPreferenceService.getDailyPreferenceByJournalEntryId(journalEntry.getId());
+            Set<Category> categories = dailyNewsPreferences.stream()
+                    .flatMap(pref -> pref.getCategories().stream())
+                    .collect(Collectors.toSet());
+            return journalEntryMapping.entityToDtoWithCategories(journalEntry, categories);
+        });
     }
 
-    public JournalEntryDTO getEntryById(Long id, Authentication authentication){
+    public JournalEntryDTO getEntryById(Long id, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
-        return journalEntryMapping.entityToDto(journalEntry);
+        List<DailyNewsPreference> dailyNewsPreferences = dailyPreferenceService.getDailyPreferenceByJournalEntryId(id);
+        Set<Category> categories = dailyNewsPreferences.stream()
+                .flatMap(dailyNewsPreference -> dailyNewsPreference.getCategories().stream())
+                .collect(Collectors.toSet());
+        return journalEntryMapping.entityToDtoWithCategories(journalEntry, categories);
     }
 
-    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication){
+    public void updateEntry(Long id, JournalEntryRequestDTO journalEntryDTO, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
@@ -83,7 +93,7 @@ public class JournalService {
         dailyPreferenceService.checkAndSaveDailyPreferenceFromJournalEntry(user, journalEntry, journalEntryDTO, true);
     }
 
-    public void deleteEntry(Long id, Authentication authentication){
+    public void deleteEntry(Long id, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         JournalEntry journalEntry = journalEntryRepository.findByIdAndUserId(id, user.getId())
@@ -91,7 +101,7 @@ public class JournalService {
         journalEntryRepository.delete(journalEntry);
     }
 
-    public List<MoodDTO> getAllMoods(){
+    public List<MoodDTO> getAllMoods() {
         Iterable<Mood> moods = moodRepository.findAll();
 
         List<MoodDTO> moodDTOs = new ArrayList<>();

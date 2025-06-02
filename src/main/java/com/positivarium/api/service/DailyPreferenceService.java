@@ -29,21 +29,21 @@ public class DailyPreferenceService {
             JournalEntry journalEntry,
             JournalEntryRequestDTO journalEntryRequestDTO,
             Boolean isUpdate
-    ){
+    ) {
         // CASE 1 : categories are specified in journal entry -> save daily preference
         // CASE 2 : categories are not specified but mood is :
             // CASE 2-1 : no match with global preferences -> do nothing (set to null if update)
             // CASE 2-2 : match with global preferences -> get categories and save daily preference
         // CASE 3 : categories and mood are not specified -> do nothing (set to null if update)
 
-        if(journalEntryRequestDTO.categoryIds().isEmpty()){
-            if(journalEntryRequestDTO.moodIds().isEmpty()){
+        if (journalEntryRequestDTO.categoryIds().isEmpty()) {
+            if (journalEntryRequestDTO.moodIds().isEmpty()) {
                 // CASE 3
-                if(isUpdate) updateDailyPreference(user, journalEntry, null);
+                if (isUpdate) updateDailyPreference(user, journalEntry, null);
             } else {
                 Iterable<GlobalNewsPreference> globalNewsPreferences = globalPreferenceRepository.findAllByUserId(user.getId());
                 // CHECK GLOBAL WITH MOOD(S)
-                if(globalNewsPreferences.iterator().hasNext()){
+                if (globalNewsPreferences.iterator().hasNext()) {
                     Iterable<Mood> iterableMoods = moodRepository.findAllById(journalEntryRequestDTO.moodIds());
                     Set<Mood> moods = StreamSupport
                             .stream(iterableMoods.spliterator(), false)
@@ -55,18 +55,18 @@ public class DailyPreferenceService {
                             .filter(g -> moods.contains(g.getMood()))
                             .toList();
 
-                    if(!matchedGlobalPreferences.isEmpty()){
+                    if (!matchedGlobalPreferences.isEmpty()) {
                         // Get all categories from matched global preferences
                         Set<Category> matchedCategories = matchedGlobalPreferences.stream()
                                 .flatMap(pref -> pref.getCategories().stream())
                                 .collect(Collectors.toSet());
 
                         // CASE 2-2
-                        if(isUpdate) updateDailyPreference(user, journalEntry, matchedCategories);
+                        if (isUpdate) updateDailyPreference(user, journalEntry, matchedCategories);
                         else saveDailyPreference(user, journalEntry, matchedCategories);
                     } else {
                         // CASE 2-1
-                        if(isUpdate) updateDailyPreference(user, journalEntry, null);
+                        if (isUpdate) updateDailyPreference(user, journalEntry, null);
                     }
                 }
             }
@@ -77,16 +77,16 @@ public class DailyPreferenceService {
                     .stream(iterableCategories.spliterator(), false)
                     .collect(Collectors.toSet());
 
-            if(isUpdate) updateDailyPreference(user, journalEntry, categories);
+            if (isUpdate) updateDailyPreference(user, journalEntry, categories);
             else saveDailyPreference(user, journalEntry, categories);
         }
     }
 
-    public void updateDailyPreference(User user, JournalEntry journalEntry, Set<Category> categories){
+    public void updateDailyPreference(User user, JournalEntry journalEntry, Set<Category> categories) {
         Optional<DailyNewsPreference> previousDailyNewsPreference =
                 dailyPreferenceRepository.findByJournalEntryIdAndUserId(journalEntry.getId(), user.getId());
 
-        if(previousDailyNewsPreference.isPresent()){
+        if (previousDailyNewsPreference.isPresent()) {
             DailyNewsPreference dailyNewsPreference = previousDailyNewsPreference.get();
 
             dailyNewsPreference.setCategories(categories);
@@ -96,7 +96,7 @@ public class DailyPreferenceService {
         }
     }
 
-    public void saveDailyPreference(User user, JournalEntry journalEntry, Set<Category> categories){
+    public void saveDailyPreference(User user, JournalEntry journalEntry, Set<Category> categories) {
         DailyNewsPreference dailyNewsPreference =
                 DailyNewsPreference.builder()
                         .user(user)
@@ -105,5 +105,9 @@ public class DailyPreferenceService {
                         .build();
 
         dailyPreferenceRepository.save(dailyNewsPreference);
+    }
+
+    public List<DailyNewsPreference> getDailyPreferenceByJournalEntryId(Long id) {
+        return dailyPreferenceRepository.findByJournalEntryId(id);
     }
 }
