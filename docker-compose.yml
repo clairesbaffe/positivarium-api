@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: positivarium
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "55432:5432"
+    networks:
+      - positivarium-network
+
+  positivarium-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"
+    networks:
+      - positivarium-network
+
+
+networks:
+  positivarium-network:
+    driver: bridge
+
+volumes:
+  pgdata:
