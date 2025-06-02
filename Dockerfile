@@ -1,3 +1,13 @@
+#Step 1: Build
+FROM maven:3.9.6-eclipse-temurin-21 as builder
+
+WORKDIR /build
+
+COPY . .
+
+RUN mvn clean package -DskipTests
+
+# Step 2: Execute
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
