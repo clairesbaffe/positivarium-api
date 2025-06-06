@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Locale.filter;
+
 @Service
 @RequiredArgsConstructor
 public class JournalService {
@@ -39,7 +41,7 @@ public class JournalService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapping categoryMapping;
 
-    public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) throws Exception {
+    public void createEntry(JournalEntryRequestDTO journalEntryDTO, Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
         // check if one was already created today
@@ -60,7 +62,7 @@ public class JournalService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         Page<JournalEntry> journalEntries = journalEntryRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
-    
+
         return journalEntries.map(journalEntry -> {
             List<DailyNewsPreference> dailyNewsPreferences = dailyPreferenceService.getDailyPreferenceByJournalEntryId(journalEntry.getId());
             Set<Category> categories = dailyNewsPreferences.stream()
@@ -115,11 +117,24 @@ public class JournalService {
     public JournalEntryDTO todaysEntry(Authentication authentication) {
         User user = userService.getCurrentUser(authentication);
 
+        // Get last entry from user
         Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
 
-        return lastJournalEntry
+        // Check if it was today
+        JournalEntry todaysJournalEntry = lastJournalEntry
                 .filter(entry -> entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
-                .map(journalEntryMapping::entityToDto)
                 .orElse(null);
+
+        if (todaysJournalEntry != null) {
+            List<DailyNewsPreference> dailyNewsPreferences =
+                    dailyPreferenceService.getDailyPreferenceByJournalEntryId(lastJournalEntry.get().getId());
+            Set<Category> categories = dailyNewsPreferences.stream()
+                    .flatMap(pref -> pref.getCategories().stream())
+                    .collect(Collectors.toSet());
+
+            return journalEntryMapping.entityToDtoWithCategories(todaysJournalEntry, categories);
+        } else {
+            return null;
+        }
     }
 }
