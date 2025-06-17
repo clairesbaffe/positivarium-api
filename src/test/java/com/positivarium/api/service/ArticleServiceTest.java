@@ -45,9 +45,9 @@ public class ArticleServiceTest {
     private Article article;
 
     // scenario variables
-    private final Long userId = 42L;
+    private final Long userId = 3L;
     private final Long articleId = 1L;
-    private final String username = "alice";
+    private final String username = "claire";
 
     @BeforeEach
     void setup() {
@@ -75,7 +75,7 @@ public class ArticleServiceTest {
     @Test
     public void testGetArticleById_success() {
         // override authentication because getArticleById does not call getCurrentUser
-        lenient().when(userService.getUser(username)).thenReturn(user);
+        when(userService.getUser(username)).thenReturn(user);
 
         // simulates that mapping returns DTO
         ArticleDTO dto = ArticleDTO.builder().id(articleId).userLiked(true).likesCount(10L).build();
@@ -102,52 +102,55 @@ public class ArticleServiceTest {
 
     @Test
     public void testCreateArticle_success(){
-        ArticleDTO inputDto = ArticleDTO.builder()
+        ArticleDTO inputDTO = ArticleDTO.builder()
                 .title("Nouveau titre")
                 .content("Contenu de l'article")
                 .build();
 
-        User currentUser = User.builder().id(userId).build();
-        when(userService.getCurrentUser(authentication)).thenReturn(currentUser);
-
-        Article articleFromDto = Article.builder()
-                .title(inputDto.title())
-                .content(inputDto.content())
+        Article articleFromDTO = Article.builder()
+                .title(inputDTO.title())
+                .content(inputDTO.content())
                 .build();
-        when(articleMapping.dtoToEntity(inputDto)).thenReturn(articleFromDto);
+        when(articleMapping.dtoToEntity(inputDTO)).thenReturn(articleFromDTO);
 
         Article savedArticle = Article.builder()
                 .id(100L)
-                .title(articleFromDto.getTitle())
-                .content(articleFromDto.getContent())
-                .user(currentUser)
+                .title(articleFromDTO.getTitle())
+                .content(articleFromDTO.getContent())
+                .user(user)
                 .isPublished(false)
                 .publishedAt(null)
                 .build();
-        when(articleRepository.save(articleFromDto)).thenReturn(savedArticle);
+        when(articleRepository.save(articleFromDTO)).thenReturn(savedArticle);
 
-        ArticleDTO outputDto = ArticleDTO.builder()
+        ArticleDTO outputDTO = ArticleDTO.builder()
                 .id(100L)
                 .title(savedArticle.getTitle())
                 .content(savedArticle.getContent())
                 .build();
-        when(articleMapping.entityToDto(savedArticle)).thenReturn(outputDto);
+        when(articleMapping.entityToDto(savedArticle)).thenReturn(outputDTO);
 
         // Act
-        ArticleDTO result = articleService.createArticle(inputDto, authentication);
+        ArticleDTO result = articleService.createArticle(inputDTO, authentication);
 
         // Assert
-        assertEquals(outputDto, result);
+        assertEquals(outputDTO, result);
 
-        // Vérifier que l'article a bien été modifié avant sauvegarde
-        assertFalse(articleFromDto.isPublished());
-        assertNull(articleFromDto.getPublishedAt());
-        assertEquals(currentUser, articleFromDto.getUser());
+        // Check if article was explicitly modified in method before save
+        // articleFromDTO is last variable before save
+        // To avoid forgetting if modifying method
+        assertEquals(user, articleFromDTO.getUser());
+        assertFalse(articleFromDTO.isPublished());
+        assertNull(articleFromDTO.getPublishedAt());
 
-        // Vérifier que les méthodes ont été appelées correctement
+        // Check if mocked methods were actually called
+        // To avoid forgetting if modifying method
         verify(userService).getCurrentUser(authentication);
-        verify(articleMapping).dtoToEntity(inputDto);
-        verify(articleRepository).save(articleFromDto);
+        verify(articleMapping).dtoToEntity(inputDTO);
+        verify(articleRepository).save(articleFromDTO);
         verify(articleMapping).entityToDto(savedArticle);
+
+        // Verify can also check that a method was NOT called in a certain scenario
+        // Or that mocked class did not receive unwanted call
     }
 }
