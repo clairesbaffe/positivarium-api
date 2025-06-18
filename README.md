@@ -1,72 +1,100 @@
-# 🌱 Positivarium API
+# Le Positivarium - back-end API
 
-**Positivarium API** is a Java Spring Boot application containerized with Docker.
+**Le Positivarium** is a French-speaking positive-only news web application designed to highlight uplifting stories, scientific progress, and inspiring initiatives. It was developed as part of a Bachelor’s degree project in Web & Application Development.
 
-It connects to a PostgreSQL database and uses [Cloudinary](https://cloudinary.com/) for media storage.
+This is a **RESTful API** built with [Java](https://www.java.com/fr/), [Spring Boot](https://spring.io/projects/spring-boot), and [PostgreSQL](https://www.postgresql.org/).
 
----
+## Features
 
-## 🚀 Prerequisites
+- Role-based authentication using JWT: reader, publisher, admin, banned
+- Publish, edit, and moderate news articles
+- Personalised news feed based on private journal entries
+- Private daily journal (only available to regular users)
+- Admin interface for user management, moderation, and notifications
+- Follow system to track favorite publishers
+- Notification system for key events (moderation actions, role updates, etc.)
+- API documentation via Swagger UI
 
-- **Docker** & **Docker Compose**
-- (Optional) Java 17+ and Maven if you want to run without Docker
-- A [Cloudinary account](https://cloudinary.com/) to get your API key
+## Tech Stack
 
----
+- Java 17
+- Spring Boot
+- Spring Security + JWT
+- Spring Data JPA
+- PostgreSQL
+- Docker & Docker Compose
+- Swagger / OpenAPI (for API docs)
 
-## ⚙️ Configuration
+## Getting Started
 
-### 🔐 Create a `.env` file at the root of the project:
+### Prerequisites
 
-You can start from `.env.example` and customize it:
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
 
-```bash
-cp .env.example .env
-```
+### Environment setup
 
-In your `.env` file, define:
+Create a `.env` file at the root of the project using the `.env.example` file provided.
+
+This project uses [Cloudinary](https://cloudinary.com/) for media (image) uploads.  
+You need to create a Cloudinary account and get your API credentials (API key, API secret, and cloud name).
+
+Then fill in the following in your `.env` file:
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/positivarium
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=password
-
 CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ```
 
-## 🐳 Run the API with Docker
-
-Make sure ports `8081` and `55432` are available on your machine.
-
-Then run:
+### Run the application
 
 ```bash
 docker-compose up --build
 ```
 
-The API will be available at:
+This will start the application and its PostgreSQL database using Docker.
 
-👉 http://localhost:8081
+Application will be available at http://localhost:8081.
 
-## 🧪 Test your API
+You can access Swagger UI documentation at : http://localhost:8081/swagger-ui.html
 
-You can test your endpoints with Postman, Insomnia or simply with `curl`.
+## Testing
 
-## 🛠️ Development without Docker (optional)
+Unit tests are written using JUnit and Mockito.
 
-If you prefer to run locally without Docker:
+Run tests using:
 
-1. Make sure PostgreSQL is running locally on port 5432
-2. Create a src/main/resources/application.properties with:
-    - Database URL
-    - Hibernate settings
-    - Flyway config (e.g. classpath:db/migration)
-    - CORS rules
-3. Run with:
 ```bash
-./mvnw spring-boot:run
+./mvnw test
 ```
 
-## 📄 License
+- Tests cover one of the most critical services
+- Test structure serves as a basis for potential test expansion
+- Integration with CI pipeline is planned for future versions
 
-This project is for educational purposes (student project).
+## CI/CD Pipeline
+
+The back-end is automatically deployed via Render on each push to the main branch.
+
+- The app is containerised using Docker
+- The `.env` file must be configured in the Render dashboard (based on `.env.example`)
+- During each deployment :
+    - A full build is triggered
+    - Unit tests are executed automatically during the build process
+    - If any test fails, the build is aborted and the application is not deployed
+
+This ensures that only valid and tested code is pushed to production, reducing the risk of deploying broken features.
+
+## API Documentation
+
+The API is documented using Swagger / OpenAPI.
+Swagger UI is available at : http://localhost:8081/swagger-ui.html or http://localhost:8081/v3/api-docs for JSON.
+
+## Notes
+
+- The back-end communicates with a Next.js front-end (see [positivarium-frontend](https://github.com/clairesbaffe/positivarium-front))
+- JWT-based auth is used, with role-based access control
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+You are free to use, copy, modify, and distribute the code. However, contributions to this repository must follow its guidelines and remain respectful of the original work.
