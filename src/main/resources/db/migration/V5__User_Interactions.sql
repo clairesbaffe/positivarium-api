@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS notifications (
     sender_id INT,
     receiver_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_user FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE SET NULL
+    CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_user FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS follows (

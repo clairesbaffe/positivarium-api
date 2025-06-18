@@ -192,7 +192,6 @@ public class UserService {
     public AuthResponseDTO updateProfile(UserRequestDTO userRequestDTO, Authentication authentication){
         User user = getCurrentUser(authentication);
         user.setUsername(userRequestDTO.username());
-        user.setEmail(userRequestDTO.email());
         user.setDescription(userRequestDTO.description());
         userRepository.save(user);
 
@@ -210,6 +209,15 @@ public class UserService {
             userRepository.save(user);
         } else {
             throw new InvalidCredentialsException("Old password does not match");
+        }
+    }
+
+    public void deleteAccount(Authentication authentication, String password){
+        User user = getCurrentUser(authentication);
+        if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            userRepository.deleteById(user.getId());
+        } else {
+            throw new InvalidCredentialsException("Password does not match");
         }
     }
 

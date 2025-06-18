@@ -8,10 +8,15 @@ import org.springframework.stereotype.Component;
 public class CommentMapping {
 
     public CommentDTO entityToDto(Comment comment){
+        String username = (comment.getUser() == null || comment.getUser().getRoles().stream()
+                .anyMatch(role -> "ROLE_BAN".equals(role.getName())))
+                ? "Auteur inconnu"
+                : comment.getUser().getUsername();
+
         return CommentDTO.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .username(comment.getUser().getUsername())
+                .username(username)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

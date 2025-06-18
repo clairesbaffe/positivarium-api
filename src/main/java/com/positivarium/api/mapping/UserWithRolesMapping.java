@@ -19,7 +19,6 @@ public class UserWithRolesMapping {
         return UserWithRolesDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .email(user.getEmail())
                 .description(user.getDescription())
                 .roles(roleNames)
                 .build();
