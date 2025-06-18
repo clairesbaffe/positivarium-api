@@ -94,8 +94,10 @@ public class SecurityConfiguration {
                         // Public access to certain routes (homepage, registration, login)
                         .requestMatchers("/", "/index", "/test", "/test/*", "/api/register", "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/articles/", "/api/articles/*", "/api/articles/published/*", "/api/articles/categories").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/comments/", "api/comments/article/*", "api/comments/user/*", "api/comments/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/comments/", "/api/comments/article/*", "/api/comments/user/*", "/api/comments/*").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/profile/publisher/*").permitAll()
+
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()

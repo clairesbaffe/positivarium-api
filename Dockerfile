@@ -5,7 +5,8 @@ WORKDIR /build
 
 COPY . .
 
-RUN mvn clean package -DskipTests
+# Tests are also run here, if they fail, build fails
+RUN mvn clean package
 
 # Step 2: Execute
 FROM eclipse-temurin:17-jdk-alpine
