@@ -2,10 +2,7 @@ package com.positivarium.api.controller;
 
 import com.positivarium.api.dto.*;
 import com.positivarium.api.enums.PublisherRequestStatusEnum;
-import com.positivarium.api.service.ArticleService;
-import com.positivarium.api.service.CommentService;
-import com.positivarium.api.service.PublisherRequestService;
-import com.positivarium.api.service.ReportService;
+import com.positivarium.api.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +17,7 @@ public class AdminController {
     private final PublisherRequestService publisherRequestService;
     private final ArticleService articleService;
     private final CommentService commentService;
+    private final HttpLogService httpLogService;
 
     @PreAuthorize("!hasRole('BAN')")
     @DeleteMapping("/articles/{id}")
@@ -111,6 +109,14 @@ public class AdminController {
             @RequestParam PublisherRequestStatusEnum status
     ){
         publisherRequestService.updatePublisherRequestStatus(id, status);
+    }
+
+    @GetMapping("logs")
+    public Page<HttpLogDTO> getLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return httpLogService.getLogs(page, size);
     }
 
 }
