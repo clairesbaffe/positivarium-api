@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +61,6 @@ public class UserService {
     }
 
     public UserWithRolesDTO getUserByUsername(String username){
-        System.out.println(username);
         User user = findUserByUsername(username);
         if(user == null) throw new ResourceNotFoundException("User not found");
         return userWithRolesMapping.entityToDto(user);
@@ -83,7 +81,7 @@ public class UserService {
         return userMapping.entityToDtoWithIsFollowed(publisher, isFollowed);
     }
 
-    public User registerNewUserAccount(User user) {
+    public void registerNewUserAccount(User user) {
         // set default role
         Role defaultRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -91,7 +89,7 @@ public class UserService {
         user.setRoles(rolesList);
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public void updateUser(User user){
@@ -124,13 +122,12 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .getRoles()
                 .stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+                .map(Role::getName).toList();
     }
 
     public List<String> getUserRoles(User user) {
         if (user == null) throw new ResourceNotFoundException("User not found");
-        return user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
+        return user.getRoles().stream().map(Role::getName).toList();
     }
 
 
@@ -145,7 +142,7 @@ public class UserService {
         List<Role> roles = roleNames.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found")))
-                .collect(Collectors.toList());
+                .toList();
         user.setRoles(roles);
 
         userRepository.save(user);

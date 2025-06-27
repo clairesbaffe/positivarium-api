@@ -1,7 +1,7 @@
 package com.positivarium.api.config;
 
 import com.positivarium.api.service.HttpLogService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -12,10 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private HttpLogService httpLogService;
+    private final HttpLogService httpLogService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,7 +29,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
             long duration = System.currentTimeMillis() - startTime;
             String method = request.getMethod();
             String uri = request.getRequestURI();
-            int status = response.getStatus();;
+            int status = response.getStatus();
 
             String username =
                     request.getUserPrincipal() != null

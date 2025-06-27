@@ -5,7 +5,6 @@ import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class PublisherController {
 
     private final ArticleService articleService;
-
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        return ResponseEntity.ok().body("This is ok, you can get in");
-    }
 
     @GetMapping("/articles/drafts")
     public Page<SimpleArticleDTO> getDraftsByUser(

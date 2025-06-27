@@ -38,11 +38,7 @@ public class CommentController {
             @PathVariable Long articleId,
             Authentication authentication
     ){
-        try{
-            commentService.createComment(commentDTO, articleId, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        commentService.createComment(commentDTO, articleId, authentication);
     }
 
     @GetMapping("/article/{articleId}")

@@ -19,13 +19,9 @@ public class RegisterController {
     }
 
     @PostMapping("/api/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        try{
-        User newUser = userService.registerNewUserAccount(user);
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        userService.registerNewUserAccount(user);
         return ResponseEntity.ok("User registered successfully");
-        } catch (Exception e) {
-            throw new RuntimeException("Registration failed: " + e.getMessage(), e);
-        }
     }
 
 }

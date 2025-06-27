@@ -39,7 +39,7 @@ public class DailyPreferenceService {
         if (journalEntryRequestDTO.categoryIds().isEmpty()) {
             if (journalEntryRequestDTO.moodIds().isEmpty()) {
                 // CASE 3
-                if (isUpdate) updateDailyPreference(user, journalEntry, null);
+                doNothingOrUpdate(isUpdate, user, journalEntry, null);
             } else {
                 Iterable<GlobalNewsPreference> globalNewsPreferences = globalPreferenceRepository.findAllByUserId(user.getId());
                 // CHECK GLOBAL WITH MOOD(S)
@@ -62,11 +62,10 @@ public class DailyPreferenceService {
                                 .collect(Collectors.toSet());
 
                         // CASE 2-2
-                        if (isUpdate) updateDailyPreference(user, journalEntry, matchedCategories);
-                        else saveDailyPreference(user, journalEntry, matchedCategories);
+                        createOrUpdate(isUpdate, user, journalEntry, matchedCategories);
                     } else {
                         // CASE 2-1
-                        if (isUpdate) updateDailyPreference(user, journalEntry, null);
+                        doNothingOrUpdate(isUpdate, user, journalEntry, null);
                     }
                 }
             }
@@ -77,9 +76,16 @@ public class DailyPreferenceService {
                     .stream(iterableCategories.spliterator(), false)
                     .collect(Collectors.toSet());
 
-            if (isUpdate) updateDailyPreference(user, journalEntry, categories);
-            else saveDailyPreference(user, journalEntry, categories);
+            createOrUpdate(isUpdate, user, journalEntry, categories);
         }
+    }
+
+    public void doNothingOrUpdate(Boolean isUpdate, User user, JournalEntry journalEntry, Set<Category> categories){
+        if (Boolean.TRUE.equals(isUpdate)) updateDailyPreference(user, journalEntry, categories);
+    }
+    public void createOrUpdate(Boolean isUpdate, User user, JournalEntry journalEntry, Set<Category> categories){
+        if (Boolean.TRUE.equals(isUpdate)) updateDailyPreference(user, journalEntry, categories);
+        else saveDailyPreference(user, journalEntry, categories);
     }
 
     public void updateDailyPreference(User user, JournalEntry journalEntry, Set<Category> categories) {

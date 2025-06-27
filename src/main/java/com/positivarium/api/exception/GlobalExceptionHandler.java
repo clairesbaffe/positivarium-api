@@ -57,4 +57,11 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE.value());
         return new ResponseEntity<>(error, HttpStatus.PAYLOAD_TOO_LARGE);
     }
+
+    // 409 CONFLICT
+    @ExceptionHandler(EntryWasAlreadyCreatedTodayException.class)
+    public ResponseEntity<ErrorResponse> handleEntryWasAlreadyCreatedToday(EntryWasAlreadyCreatedTodayException e) {
+        ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }

@@ -4,7 +4,6 @@ import com.positivarium.api.dto.UserWithRolesDTO;
 import com.positivarium.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
 
     private final UserService userService;
-
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        return ResponseEntity.ok().body("This is ok, you can get in");
-    }
 
     @GetMapping("/")
     public Page<UserWithRolesDTO> getAllUsers(

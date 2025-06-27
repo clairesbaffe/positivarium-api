@@ -35,7 +35,7 @@ public class LoginController {
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDto, HttpServletResponse response) {
+    public ResponseEntity<Object> loginUser(@RequestBody LoginDTO loginDto, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
             Authentication authentication = authenticationManager.authenticate(authToken);

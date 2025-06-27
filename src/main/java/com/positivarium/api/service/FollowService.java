@@ -39,7 +39,7 @@ public class FollowService {
     public void unfollowPublisher(Long publisherId, Authentication authentication){
         User user = userService.getCurrentUser(authentication);
 
-        if(!userService.following(user.getId(), publisherId)) throw new InvalidUserStateException("Publisher is not followed");
+        if(Boolean.FALSE.equals(userService.following(user.getId(), publisherId))) throw new InvalidUserStateException("Publisher is not followed");
 
         User publisher = userService.findUserById(publisherId);
 

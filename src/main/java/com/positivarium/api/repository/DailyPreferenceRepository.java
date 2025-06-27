@@ -1,9 +1,7 @@
 package com.positivarium.api.repository;
 
 import com.positivarium.api.entity.DailyNewsPreference;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
