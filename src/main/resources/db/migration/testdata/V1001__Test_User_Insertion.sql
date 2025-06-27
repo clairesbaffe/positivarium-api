@@ -1,5 +1,5 @@
 INSERT INTO users (username, password, enabled) VALUES
-('Claire Sbaffe', '$2a$10$yJrK77Tkvibxcx2SvL5HFOqUbRbGG14SMJcL8jpCHCqafmGavFghi', true),    -- ADMIN
+('Claire Sbaffe', '$2a$10$yJrK77Tkvibxcx2SvL5HFOqUbRbGG14SMJcL8jpCHCqafmGavFghi', true),    -- ADMIN PUBLISHER USER
 ('Paul Martin', '$2a$10$yJrK77Tkvibxcx2SvL5HFOqUbRbGG14SMJcL8jpCHCqafmGavFghi', true),      -- PUBLISHER
 ('Emma Leroy', '$2a$10$yJrK77Tkvibxcx2SvL5HFOqUbRbGG14SMJcL8jpCHCqafmGavFghi', true),       -- USER
 ('Alex Johnson', '$2a$10$yJrK77Tkvibxcx2SvL5HFOqUbRbGG14SMJcL8jpCHCqafmGavFghi', true),     -- PUBLISHER
@@ -12,6 +12,8 @@ INSERT INTO users (username, password, enabled) VALUES
 
 INSERT INTO users_roles (users_id, roles_id) VALUES
 (1, 1),
+(1, 2),
+(1, 3),
 (2, 2),
 (3, 3),
 (4, 2),
