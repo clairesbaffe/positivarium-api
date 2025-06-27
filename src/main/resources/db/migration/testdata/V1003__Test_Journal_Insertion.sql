@@ -43,8 +43,23 @@ INSERT INTO moods (name, type) VALUES
 ('Motivé', 'Anticipation'),
 ('Espérant', 'Anticipation');
 
-INSERT INTO journal_entries (description, user_id) VALUES ('description', 4);
+INSERT INTO journal_entries (description, user_id) VALUES
+('Aujourd’hui, j’ai pris le temps de noter toutes les petites choses qui m’ont fait sourire, comme le chant des oiseaux au matin et les échanges chaleureux avec mes collègues. Ces instants simples mais précieux me rappellent à quel point la vie est belle même dans les moments ordinaires.', 3),
+('Je me suis sentie un peu fatiguée et mélancolique ce matin, mais écrire dans mon journal m’a permis de relativiser. Je suis reconnaissante pour le soutien de mes amis et le soleil qui a percé les nuages cet après-midi.', 5),
+('J’ai passé la journée à explorer de nouveaux livres inspirants qui m’ont donné de la motivation pour mes projets personnels. Je ressens une grande satisfaction d’apprendre et de grandir chaque jour.', 7),
+('Malgré quelques soucis au travail, j’ai trouvé un moment pour exprimer ma gratitude envers ma famille et les petites victoires de la journée. Cette réflexion m’a redonné confiance et optimisme pour la suite.', 9);
+
 
 INSERT INTO journal_entries_moods (journal_entry_id, mood_id) VALUES
-(1, 1),
-(1, 3);
+(1, 2),  -- Heureux
+(1, 6),  -- Reconnaissant
+
+(2, 9),  -- Mélancolique
+(2, 6),  -- Reconnaissant
+
+(3, 34), -- Satisfait
+(3, 37), -- Motivé
+
+(4, 32), -- Confiant
+(4, 33), -- Sûr de soi
+(4, 35); -- Optimiste

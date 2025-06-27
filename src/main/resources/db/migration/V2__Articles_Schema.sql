@@ -5,14 +5,14 @@ CREATE TABLE IF NOT EXISTS general_categories(
 
 CREATE TABLE IF NOT EXISTS news_categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
     category_id INT,
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES general_categories(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(50) NOT NULL,
+    title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
     content TEXT NOT NULL,
     main_image VARCHAR(255) NOT NULL,
