@@ -1,6 +1,5 @@
 package com.positivarium.api.controller;
 
-import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
@@ -24,11 +23,7 @@ public class JournalController {
             @RequestBody JournalEntryRequestDTO journalEntryDTO,
             Authentication authentication
     ){
-        try{
-            journalService.createEntry(journalEntryDTO, authentication);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        journalService.createEntry(journalEntryDTO, authentication);
     }
 
     @GetMapping("/")

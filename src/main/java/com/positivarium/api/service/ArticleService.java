@@ -83,15 +83,14 @@ public class ArticleService {
     }
 
     public ArticleDTO getArticleById(Long id, Authentication authentication) {
+        Article article = articleRepository.findByIdAndIsPublishedTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
         String username = authentication != null && authentication.isAuthenticated() ? authentication.getName() : null;
 
         // Not calling getCurrentUser because user does not need to be authenticated
-        Boolean liked = (username != null && userService.getUser(username) != null)
-                ? articleRepository.userLikedArticle(userService.getUser(username).getId(), id)
-                : false;
+        Boolean liked = articleRepository.userLikedArticle(userService.getUser(username).getId(), id);
 
-        Article article = articleRepository.findByIdAndIsPublishedTrue(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         Long likesCount = articleRepository.countLikesByArticleId(id);
         return articleMapping.entityToDtoWithLikes(article, likesCount, liked);
     }

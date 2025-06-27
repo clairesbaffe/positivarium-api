@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS daily_news_preferences (
     id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     user_id INT NOT NULL,
     journal_entry_id INT NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS global_news_preferences (
 CREATE TABLE IF NOT EXISTS global_news_preferences_categories (
     id SERIAL PRIMARY KEY,
     category_id INT NOT NULL,
-    global_news_preference_id INT,
+    global_news_preference_id INT NOT NULL,
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE CASCADE,
     CONSTRAINT fk_global_news_preference FOREIGN KEY (global_news_preference_id) REFERENCES global_news_preferences(id) ON DELETE CASCADE
 );

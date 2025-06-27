@@ -15,13 +15,18 @@ public class ArticleMapping {
     private final CategoryRepository categoryRepository;
 
     public ArticleDTO entityToDto(Article article){
+        String username = (article.getUser() == null || article.getUser().getRoles().stream()
+            .anyMatch(role -> "ROLE_BAN".equals(role.getName())))
+                ? "Auteur inconnu"
+                : article.getUser().getUsername();
+
         return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .content(article.getContent())
                 .mainImage(article.getMainImage())
-                .username(article.getUser().getUsername())
+                .username(username)
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
@@ -60,13 +65,19 @@ public class ArticleMapping {
     }
 
     public ArticleDTO entityToDtoWithLikes(Article article, Long likesCount, Boolean userLiked){
+        String username = (article.getUser() == null || article.getUser().getRoles().stream()
+            .anyMatch(role -> "ROLE_BAN".equals(role.getName())))
+                ? "Auteur inconnu"
+                : article.getUser().getUsername();
+
+
         return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .description(article.getDescription())
                 .content(article.getContent())
                 .mainImage(article.getMainImage())
-                .username(article.getUser().getUsername())
+                .username(username)
                 .category(article.getCategory() != null ? categoryMapping.entityToDto(article.getCategory()) : null)
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())

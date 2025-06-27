@@ -16,7 +16,10 @@ public class CloudinaryImageUploadService {
     private final Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+
+        @SuppressWarnings("unchecked") // To avoid raw Map
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+
         return (String) uploadResult.get("secure_url");
     }
 }

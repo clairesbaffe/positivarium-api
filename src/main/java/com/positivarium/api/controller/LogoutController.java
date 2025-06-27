@@ -11,7 +11,6 @@ public class LogoutController {
 
     @PostMapping("/api/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
-        System.out.println("logging out");
         // Suppression du cookie JWT
         Cookie cookie = new Cookie("access_token", null);  // Remplace "access_token" par le nom de ton cookie
         cookie.setHttpOnly(true);

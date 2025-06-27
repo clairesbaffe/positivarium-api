@@ -25,9 +25,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-
     @Column(nullable = false)
     private String password;
 
@@ -45,7 +42,7 @@ public class User {
 
     private String claimToken;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Article> articles = new ArrayList<>();
 
     @ManyToMany
@@ -56,7 +53,7 @@ public class User {
     )
     private Set<Article> likedArticles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -76,7 +73,7 @@ public class User {
     @ManyToMany(mappedBy = "following")
     private Set<User> followers = new HashSet<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notification> sentNotifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)

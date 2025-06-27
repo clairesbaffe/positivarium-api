@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 // Mockito simulates other methods that are called in tested method
 // JUnit actually tests it
 @ExtendWith(MockitoExtension.class)
-public class ArticleServiceTest {
+class ArticleServiceTest {
 
     // These are simulated
     @Mock
@@ -73,7 +73,7 @@ public class ArticleServiceTest {
 
 
     @Test
-    public void testGetArticleById_success() {
+    void testGetArticleById_success() {
         // override authentication because getArticleById does not call getCurrentUser
         when(userService.getUser(username)).thenReturn(user);
 
@@ -91,7 +91,7 @@ public class ArticleServiceTest {
     }
 
     @Test
-    public void testGetArticleById_returns404(){
+    void testGetArticleById_returns404(){
         // override articleRepository.findByIdAndIsPublishedTrue returning nothing
         when(articleRepository.findByIdAndIsPublishedTrue(articleId)).thenReturn(Optional.empty());
 
@@ -101,7 +101,7 @@ public class ArticleServiceTest {
     }
 
     @Test
-    public void testCreateArticle_success(){
+    void testCreateArticle_success(){
         ArticleDTO inputDTO = ArticleDTO.builder()
                 .title("Nouveau titre")
                 .content("Contenu de l'article")

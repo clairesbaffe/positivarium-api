@@ -1,10 +1,10 @@
 package com.positivarium.api.service;
 
-import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.JournalEntryDTO;
 import com.positivarium.api.dto.JournalEntryRequestDTO;
 import com.positivarium.api.dto.MoodDTO;
 import com.positivarium.api.entity.*;
+import com.positivarium.api.exception.EntryWasAlreadyCreatedTodayException;
 import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.CategoryMapping;
 import com.positivarium.api.mapping.JournalEntryMapping;
@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Locale.filter;
-
 @Service
 @RequiredArgsConstructor
 public class JournalService {
@@ -48,7 +46,7 @@ public class JournalService {
         Optional<JournalEntry> lastJournalEntry = journalEntryRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId());
         lastJournalEntry.ifPresent(entry -> {
             if (entry.getCreatedAt().toLocalDate().isEqual(LocalDate.now()))
-                throw new RuntimeException("An entry was already created today");
+                throw new EntryWasAlreadyCreatedTodayException();
         });
 
         JournalEntry journalEntry = journalEntryMapping.dtoToEntity(journalEntryDTO, user);

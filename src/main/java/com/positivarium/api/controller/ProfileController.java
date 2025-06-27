@@ -43,4 +43,12 @@ public class ProfileController {
     ){
         return userService.getPublisherByUsername(username, authentication);
     }
+
+    @DeleteMapping("/")
+    public void deleteUserProfile(
+            Authentication authentication,
+            @RequestBody UserRequestDTO userRequestDTO
+    ){
+        userService.deleteAccount(authentication, userRequestDTO.password());
+    }
 }
