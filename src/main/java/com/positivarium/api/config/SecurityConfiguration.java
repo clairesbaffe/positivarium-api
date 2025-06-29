@@ -106,6 +106,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET,"/api/profile/publisher/*").permitAll()
 
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/f1a3678c-eebe-4945-a5e4-1399cf6f1980.txt").permitAll()
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()
