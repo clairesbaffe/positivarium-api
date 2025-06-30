@@ -55,7 +55,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(allowedOrigins));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -106,6 +106,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET,"/api/profile/publisher/*").permitAll()
 
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/f1a3678c-eebe-4945-a5e4-1399cf6f1980.txt").permitAll() // For Probely verification
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()
