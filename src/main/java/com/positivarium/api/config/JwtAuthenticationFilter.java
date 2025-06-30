@@ -48,6 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("Could not set user authentication in security context", ex);
         }
 
+        response.setHeader("X-Frame-Options", "DENY");
+        response.setHeader("Content-Security-Policy", "default-src 'self'");
+        response.setHeader("X-Content-Type-Options", "nosniff");
+        response.setHeader("X-Powered-By", null);
+        response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
         filterChain.doFilter(request, response);
     }
 }
