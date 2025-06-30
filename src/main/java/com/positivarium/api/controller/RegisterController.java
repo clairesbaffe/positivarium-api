@@ -1,5 +1,6 @@
 package com.positivarium.api.controller;
 
+import com.positivarium.api.dto.UserRequestDTO;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class RegisterController {
     }
 
     @PostMapping("/api/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody UserRequestDTO user) {
         userService.registerNewUserAccount(user);
         return ResponseEntity.ok("User registered successfully");
     }

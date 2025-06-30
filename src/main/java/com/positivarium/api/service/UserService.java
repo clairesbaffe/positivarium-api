@@ -20,12 +20,29 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{10,}$";
+
+    List<String> COMMON_PASSWORDS = new ArrayList<>(List.of(
+            "password", "123456", "123456789", "12345678", "12345", "qwerty", "abc123",
+            "football", "dragon", "111111", "iloveyou", "master", "sunshine", "passw0rd", "123123",
+            "654321", "azerty", "azertyuiop", "motdepasse", "bonjour", "soleil", "chocolat", "123456",
+            "12345678", "123456789", "qwertz", "admin", "admin123", "toto",
+            "prenom", "nom", "paris", "marseille", "france", "monchien", "jesuis123", "jean123", "bonjour123",
+            "jean", "pierre", "michel", "alain", "philippe",
+            "marie", "nathalie", "isabelle", "christine", "sylvie"
+    ));
+
+    Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -39,6 +56,21 @@ public class UserService {
         if(username == null) throw new ResourceNotFoundException("User not found");
 
         return getUser(username);
+    }
+
+    public String validatePassword(String password) {
+        if (password == null) return "Null";
+        else if(password.length() < 10) return "Not long enough";
+
+        for (String commonPassword : COMMON_PASSWORDS) {
+            if (password.toLowerCase().contains(commonPassword.toLowerCase())) {
+                return "Contains common password";
+            }
+        }
+
+        Matcher matcher = pattern.matcher(password);
+        if(matcher.matches()) return "OK";
+        else return "Not complex enough";
     }
 
     public User findUserById(Long id) {
@@ -81,15 +113,28 @@ public class UserService {
         return userMapping.entityToDtoWithIsFollowed(publisher, isFollowed);
     }
 
-    public void registerNewUserAccount(User user) {
+    public void registerNewUserAccount(UserRequestDTO user) {
+        // username unicity check
+        User matchedUsername = userRepository.findByUsername(user.username());
+        if(matchedUsername != null) throw new UsernameAlreadyTakenException();
+
+        User newUser = User.builder()
+                .username(user.username())
+                .build();
+
+        // check password strength
+        String passwordValidation = validatePassword(user.password());
+        if(!passwordValidation.equals("OK"))
+            throw new PasswordNotComplexEnoughException(passwordValidation);
+
         // set default role
         Role defaultRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         List<Role> rolesList = new ArrayList<>(Collections.singleton(defaultRole));
-        user.setRoles(rolesList);
+        newUser.setRoles(rolesList);
 
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        newUser.setPassword(bCryptPasswordEncoder.encode(user.password()));
+        userRepository.save(newUser);
     }
 
     public void updateUser(User user){
@@ -102,16 +147,6 @@ public class UserService {
 
     public Page<User> findFollowing(Long userId, Pageable pageable){
         return userRepository.findUsersFollowedBy(userId, pageable);
-    }
-
-    public User getUserByToken(String token) {
-        User user = userRepository.findByClaimToken(token);
-
-        if (user == null) throw new ResourceNotFoundException("User not found");
-        else if (user.getTokenExpiration().isBefore(LocalDateTime.now())) throw new UsernameNotFoundException("Token expired");
-        else if (user.isEnabled()) throw new UsernameNotFoundException("User already enabled");
-
-        return user;
     }
 
     public void deleteUser(Long id) {
@@ -187,6 +222,9 @@ public class UserService {
     }
 
     public AuthResponseDTO updateProfile(UserRequestDTO userRequestDTO, Authentication authentication){
+        User matchedUsername = userRepository.findByUsername(userRequestDTO.username());
+        if(matchedUsername != null) throw new UsernameAlreadyTakenException();
+
         User user = getCurrentUser(authentication);
         user.setUsername(userRequestDTO.username());
         user.setDescription(userRequestDTO.description());
@@ -200,6 +238,10 @@ public class UserService {
     }
 
     public void updatePassword(PasswordUpdateDTO passwordUpdateDTO, Authentication authentication){
+        String passwordValidation = validatePassword(passwordUpdateDTO.newPassword());
+        if(!passwordValidation.equals("OK"))
+            throw new PasswordNotComplexEnoughException(passwordValidation);
+
         User user = getCurrentUser(authentication);
         if (bCryptPasswordEncoder.matches(passwordUpdateDTO.oldPassword(), user.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(passwordUpdateDTO.newPassword()));
