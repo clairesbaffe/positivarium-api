@@ -9,9 +9,9 @@ import com.positivarium.api.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -115,5 +115,49 @@ public class DailyPreferenceService {
 
     public List<DailyNewsPreference> getDailyPreferenceByJournalEntryId(Long id) {
         return dailyPreferenceRepository.findByJournalEntryId(id);
+    }
+
+    public List<DailyNewsPreference> getDailyNewsPrefForLast3DaysByUserId(Long userId){
+        LocalDateTime threeDaysAgo = LocalDate.now().minusDays(3).atStartOfDay();
+        LocalDateTime todayEnd = LocalDate.now().plusDays(1).atStartOfDay().minusSeconds(1);
+
+        return dailyPreferenceRepository.findByUserIdAndCreatedAtBetween(userId, threeDaysAgo, todayEnd);
+    }
+
+    public Map<Category, Integer> calculateCategoryScores(List<DailyNewsPreference> preferences){
+        LocalDate today = LocalDate.now();
+
+        // check if preference was entered today
+        boolean hasTodayPreference = preferences.stream()
+                .anyMatch(p -> p.getCreatedAt().toLocalDate().isEqual(today));
+
+        LocalDate day1 = hasTodayPreference ? today : today.minusDays(1);
+        LocalDate day2 = day1.minusDays(1);
+        LocalDate day3 = day2.minusDays(1);
+
+        // Weight days, not 3, 2, 1 because default category score is 1
+        Map<LocalDate, Integer> dayWeightMap = new HashMap<>();
+        dayWeightMap.put(day1, 4);
+        dayWeightMap.put(day2, 3);
+        dayWeightMap.put(day3, 2);
+
+        Map<Category, Integer> scoreMap = new HashMap<>();
+
+        preferences.forEach(pref -> {
+                LocalDate prefDate = pref.getCreatedAt().toLocalDate();
+                Integer weight = dayWeightMap.get(prefDate);
+                if (weight == null) return;
+
+                // for each category :
+                // creates in map if not exists + sets weigh
+                // if exists, sums weight
+                pref.getCategories().forEach(category -> scoreMap.merge(category, weight, Integer::sum));
+            });
+
+        // set all categories that were not in preferences to 1
+        Iterable<Category> allCategories = categoryRepository.findAll();
+        allCategories.forEach(category -> scoreMap.putIfAbsent(category, 1));
+
+        return scoreMap;
     }
 }

@@ -21,11 +21,12 @@ public class ArticleController {
     @GetMapping("/")
     public Page<SimpleArticleDTO> getArticles(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        Authentication authentication
     ){
         // manage depending on user role and journal status
         // potentially use credentials to get user roles, but credentials must not be mandatory
-        return articleService.getArticles(page, size);
+        return articleService.getArticles(page, size, authentication);
     }
 
     @GetMapping("/{id}")
