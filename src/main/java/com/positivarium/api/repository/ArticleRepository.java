@@ -67,4 +67,12 @@ public interface ArticleRepository extends CrudRepository<Article, Long>{
     )
     Boolean userLikedArticle(Long userId, Long articleId);
 
+    @Query(
+            value = "SELECT * FROM articles " +
+                    "WHERE is_published = true AND published_at IS NOT NULL " +
+                    "ORDER BY published_at DESC " +
+                    "LIMIT ?1",
+            nativeQuery = true
+    )
+    List<Article> findPublishedTopArticles(int topArticlesNumber);
 }

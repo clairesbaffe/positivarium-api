@@ -64,4 +64,18 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
+
+    // 409 CONFLICT
+    @ExceptionHandler(UsernameAlreadyTakenException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameAlreadyTaken(UsernameAlreadyTakenException e) {
+        ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    // 400 BAD_REQUEST
+    @ExceptionHandler(PasswordNotComplexEnoughException.class)
+    public ResponseEntity<ErrorResponse> handlePasswordNotComplexEnoughException(PasswordNotComplexEnoughException e) {
+        ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

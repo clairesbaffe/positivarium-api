@@ -52,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setHeader("Content-Security-Policy", "default-src 'self'");
         response.setHeader("X-Content-Type-Options", "nosniff");
         response.setHeader("X-Powered-By", null);
+        response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
 
         filterChain.doFilter(request, response);
     }

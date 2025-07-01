@@ -5,6 +5,7 @@ import com.positivarium.api.dto.CategoryDTO;
 import com.positivarium.api.dto.SimpleArticleDTO;
 import com.positivarium.api.entity.Article;
 import com.positivarium.api.entity.Category;
+import com.positivarium.api.entity.DailyNewsPreference;
 import com.positivarium.api.entity.User;
 import com.positivarium.api.exception.ResourceNotFoundException;
 import com.positivarium.api.mapping.ArticleMapping;
@@ -14,13 +15,17 @@ import com.positivarium.api.repository.ArticleRepository;
 import com.positivarium.api.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +37,28 @@ public class ArticleService {
     private final UserService userService;
     private final CategoryRepository categoryRepository;
     private final CategoryMapping categoryMapping;
+    private final DailyPreferenceService dailyPreferenceService;
 
-    public Page<SimpleArticleDTO> getArticles(int pageNumber, int pageSize){
+    private static final int PERSONALISED_PAGES = 5;
+
+    public Page<SimpleArticleDTO> getArticles(int pageNumber, int pageSize, Authentication authentication){
+        Boolean personalise = pageNumber <= PERSONALISED_PAGES && authentication != null && authentication.isAuthenticated();
+        if (Boolean.TRUE.equals(personalise) &&
+                userService.getCurrentUser(authentication).getRoles()
+                        .stream()
+                        .anyMatch(role -> "ROLE_USER".equals(role.getName()))){
+            Page<Article> articles = getPersonalisedArticles(pageNumber, pageSize, authentication);
+
+            // articles == null means that user does not use journal
+            // therefore, no personalisation is possible, use default feed
+            if(articles != null){
+                return articles.map(article -> {
+                    Long likesCount = articleRepository.countLikesByArticleId(article.getId());
+                    return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
+                });
+            }
+        }
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Article> articles = articleRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc(pageable);
 
@@ -41,6 +66,53 @@ public class ArticleService {
             Long likesCount = articleRepository.countLikesByArticleId(article.getId());
             return simpleArticleMapping.entityToDtoWithLikesCount(article, likesCount);
         });
+    }
+
+    public Page<Article> getPersonalisedArticles(int pageNumber, int pageSize, Authentication authentication){
+        User user = userService.getCurrentUser(authentication);
+
+        List<DailyNewsPreference> preferences = dailyPreferenceService.getDailyNewsPrefForLast3DaysByUserId(user.getId());
+        if(preferences.isEmpty()) return null;
+
+        // should contain every category and its score
+        Map<Category, Integer> categoryScores = dailyPreferenceService.calculateCategoryScores(preferences);
+
+        int topArticlesNumber = PERSONALISED_PAGES * pageSize;
+
+        List<Article> topArticles = articleRepository.findPublishedTopArticles(topArticlesNumber)
+                .stream()
+                .sorted((a1, a2) -> {
+
+                    double categoryScore1 = categoryScores.getOrDefault(a1.getCategory(), 1);
+                    double categoryScore2 = categoryScores.getOrDefault(a2.getCategory(), 1);
+
+                    double score1 = categoryScore1 * computeScore(a1);
+                    double score2 = categoryScore2 * computeScore(a2);
+
+                    return Double.compare(score2, score1); // DESC
+                })
+                .toList();
+
+        // Paginate
+        int start = Math.min(pageNumber * pageSize, topArticles.size());
+        int end = Math.min(start + pageSize, topArticles.size());
+
+        // Cuts list down to requested page
+        List<Article> pagedArticles = topArticles.subList(start, end);
+
+        // Turns List into Page
+        return new PageImpl<>(pagedArticles, PageRequest.of(pageNumber, pageSize), topArticles.size());
+    }
+
+    private double computeScore(Article article) {
+        double articleHalfLife = 72;
+
+        double k = Math.log(2) / articleHalfLife;
+
+        Duration duration = Duration.between(article.getPublishedAt(), LocalDateTime.now());
+        double ageInHours = duration.toHours() + duration.toMinutesPart() / 60.0;
+
+        return Math.exp(-k * ageInHours);
     }
 
     public Page<SimpleArticleDTO> getPublishedArticlesByUser(int pageNumber, int pageSize, String username){
